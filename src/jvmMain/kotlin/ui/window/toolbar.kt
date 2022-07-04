@@ -58,23 +58,49 @@ fun toolbar(
             }
             .composed { modifier }
     ) {
-        Button(
-            onClick = {
+        Row(modifier = Modifier.weight(columnProportion["file"]!!, true)) {
+            Button(
+                onClick = {
 //                TODO("NOT IMPLEMENTED YET")
-            },
-            modifier = Modifier
-                .weight(columnProportion["file"]!!, true)
-                .fillMaxWidth()
-            ,
-            shape = RectangleShape,
-            colors = ButtonDefaults.buttonColors(backgroundColor = columnColor)
-        ) {
-            Text(
-                text = "File",
-                color = Color.Black,
-                fontSize = 30.sp,
+                },
+                modifier = Modifier
+                    .weight(1f, true)
+                    .fillMaxHeight()
+                ,
+                shape = RectangleShape,
+                colors = ButtonDefaults.buttonColors(backgroundColor = columnColor)
+            ) {
+                Text(
+                    text = "Load",
+                    color = Color.Black,
+                    fontSize = 14.sp,
+                )
+            }
+            Spacer(
+                modifier = Modifier
+                    .weight(columnProportion["lineSpacer"]!!, true)
+                    .fillMaxWidth()
+                    .background(color = Color.Black)
             )
+            Button(
+                onClick = {
+//                TODO("NOT IMPLEMENTED YET")
+                },
+                modifier = Modifier
+                    .weight(1f, true)
+                    .fillMaxHeight()
+                ,
+                shape = RectangleShape,
+                colors = ButtonDefaults.buttonColors(backgroundColor = columnColor)
+            ) {
+                Text(
+                    text = "Save",
+                    color = Color.Black,
+                    fontSize = 14.sp,
+                )
+            }
         }
+
         Spacer(
             modifier = Modifier
                 .weight(columnProportion["lineSpacer"]!!, true)
