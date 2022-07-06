@@ -1,3 +1,5 @@
-package application.logic
+package logic
 
-data class Vertex(var name: String = "")
+class Vertex() {
+    var vertexName: String = this.hashCode().toString()
+}

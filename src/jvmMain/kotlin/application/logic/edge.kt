@@ -1,3 +1,6 @@
-package application.logic
+package logic
 
-data class Edge(val vertices: Pair<Vertex, Vertex>, var weight: Int = 0)
+
+class Edge(val vertices: Pair<Vertex, Vertex>, val weight: Int = 0) {
+
+}

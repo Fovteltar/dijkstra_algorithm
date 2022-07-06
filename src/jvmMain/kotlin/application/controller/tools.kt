@@ -5,13 +5,13 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.input.key.*
 import application.logic.Logic
-import application.logic.Vertex
 import application.ui.UI
 import application.ui.objects.EdgeUI
 import application.ui.objects.VERTEX_SIZE
 import application.ui.objects.VertexUI
 import application.ui.window.Canvas
 import logger
+import logic.Vertex
 
 enum class SelectedTool {
     NOTHING, ADD_VERTEX, REMOVE_VERTEX, ADD_EDGE, REMOVE_EDGE
