@@ -12,7 +12,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import application.controller.Tools
-import application.logic.Vertex
+import logic.Vertex
 
 const val VERTEX_SIZE = 100
 

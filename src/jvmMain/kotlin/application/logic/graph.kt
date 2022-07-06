@@ -1,28 +1,33 @@
-package application.logic
+package logic
 
 class Graph(
-    val vertices: MutableMap<Vertex, MutableList<Edge>> = mutableMapOf(),////
+    val vertices: MutableMap<Vertex, MutableMap<Edge, Unit>> = mutableMapOf(),
     val edges: MutableMap<Edge, Unit> = mutableMapOf()
 ) {
     fun addVertex(vertex: Vertex) {
-        vertices[vertex] = mutableListOf()  ////
+        vertices[vertex] = mutableMapOf()  //init
     }
     fun addEdge(edge: Edge) {
         edges[edge] = Unit
-        vertices[edge.vertices?.first]!!.add(edge)////
+        vertices[edge.vertices.first]?.set(edge, Unit)
     }
 
     fun removeVertex(vertex: Vertex) {
         if (vertices.containsKey(vertex)) {
-            vertices.remove(vertex)
-//            vertices[vertex]?.removeAll()   создать удаление всех рёбер
+            val toDeleteEdges = vertices[vertex]
+            toDeleteEdges?.forEach {
+                vertices[vertex]?.remove(it.key)
+                edges.remove(it.key)
+            }
+
+
         }
     }
 
     fun removeEdge(edge: Edge) {
         if (edges.containsKey(edge)) {
             edges.remove(edge)
-            vertices[edge.vertices?.first]!!.remove(edge)        ////
+            vertices[edge.vertices.first]!!.remove(edge)
         }
     }
 }

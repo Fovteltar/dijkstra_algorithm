@@ -12,8 +12,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.unit.dp
 import application.controller.Tools
-import application.logic.Edge
 import logger
+import logic.Edge
 import kotlin.math.abs
 import kotlin.math.min
 import kotlin.math.pow
