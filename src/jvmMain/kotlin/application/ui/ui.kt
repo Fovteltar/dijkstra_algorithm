@@ -14,11 +14,11 @@ import application.ui.window.Canvas
 import application.ui.window.Footer
 import application.ui.window.Toolbar
 
-class UI(val tools: Tools) {
+class UI(private val tools: Tools) {
     val graphUI = GraphUI(tools.logic.graph)
     val toolbar = Toolbar(tools)
-    val canvas = Canvas(tools)
-    val footer = Footer(tools)
+    private val canvas = Canvas(tools)
+    private val footer = Footer(tools)
     fun draw() {
         singleWindowApplication(
             state = WindowState(size = DpSize(600.dp, 600.dp)),

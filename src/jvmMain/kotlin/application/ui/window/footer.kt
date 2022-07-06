@@ -11,9 +11,7 @@ import application.controller.Tools
 
 class Footer(val tools: Tools) {
     @Composable
-    fun draw(
-        modifier: Modifier,
-    ) {
+    fun draw(modifier: Modifier) {
         Text(
             text = "Пошаговый вывод программы/Пояснения",
             textAlign = TextAlign.Center,

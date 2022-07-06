@@ -29,9 +29,7 @@ class Toolbar(val tools: Tools) {
     val selectedButtonState = mutableStateOf(SelectedTool.NOTHING)
 
     @Composable
-    fun draw(
-        modifier: Modifier,
-    ) {
+    fun draw(modifier: Modifier) {
         val selectedButton = remember { selectedButtonState }
         val columnColor = Color.Gray
         val columnProportion = mapOf(
