@@ -75,13 +75,13 @@ class Canvas(val tools: Tools) {
 
             if (verticesAmount.value > 0) {
                 for (vertexUI in tools.ui?.graphUI?.verticesUI!!.keys) {
-                    vertexUI.drawVertex()
+                    vertexUI.draw()
                 }
             }
 
             if (edgesAmount.value > 0) {
                 for (edgeUI in tools.ui?.graphUI?.edgesUI!!.keys) {
-                    edgeUI.drawEdge()
+                    edgeUI.draw()
                 }
             }
         }

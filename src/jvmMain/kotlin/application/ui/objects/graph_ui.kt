@@ -2,7 +2,7 @@ package application.ui.objects
 
 import application.logic.Graph
 
-class GraphUI(val graph: Graph) {
+class GraphUI(private val graph: Graph) {
     val verticesUI: MutableMap<VertexUI, MutableList<EdgeUI>> = mutableMapOf()
     val edgesUI: MutableMap<EdgeUI, Unit> = mutableMapOf()
 

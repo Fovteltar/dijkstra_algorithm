@@ -20,7 +20,7 @@ class VertexUI(val vertex: Vertex = Vertex(), private val tools: Tools) {
     var topLeftOffset: Offset = Offset(0f, 0f)
 
     @Composable
-    fun drawVertex() {
+    fun draw() {
         Canvas(
             modifier = Modifier
                 .offset(x = topLeftOffset.x.dp, y = topLeftOffset.y.dp)

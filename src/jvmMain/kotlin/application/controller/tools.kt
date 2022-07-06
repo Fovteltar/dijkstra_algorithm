@@ -25,7 +25,7 @@ class Tools(
     val verticesAmount = mutableStateOf(0)
     val edgesAmount = mutableStateOf(0)
 
-    var vertexSelected = Pair<Boolean, VertexUI?>(false, null)
+    private var vertexSelected = Pair<Boolean, VertexUI?>(false, null)
 
     @OptIn(ExperimentalComposeUiApi::class)
     fun notifyMe(sender: Any) {
@@ -82,9 +82,7 @@ class Tools(
         }
     }
 
-    private fun addVertex(
-        offset: Offset,
-    ): Boolean {
+    private fun addVertex(offset: Offset): Boolean {
         // center offset -> top-left offset
         val topLeftOffset = Offset(x = offset.x - VERTEX_SIZE / 2, y = offset.y - VERTEX_SIZE / 2)
         val vertexUI = VertexUI(vertex = Vertex(), tools = this)
@@ -95,9 +93,7 @@ class Tools(
         return true
     }
 
-    private fun removeVertex(
-        vertexUI: VertexUI,
-    ): Boolean {
+    private fun removeVertex(vertexUI: VertexUI): Boolean {
         return try {
             ui!!.graphUI.removeVertex(vertexUI)
             verticesAmount.value -= 1
