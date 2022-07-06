@@ -150,7 +150,7 @@ class EdgeUI(val verticesUI: Pair<VertexUI, VertexUI>, val tools: Tools) {
             )
             drawCircle(
                 color = Color.Magenta,
-                radius = ARROW_SIZE,
+                radius = 10f,
                 center = end,
             )
         }

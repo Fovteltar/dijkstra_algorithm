@@ -10,6 +10,8 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowForward
+import androidx.compose.material.icons.filled.Done
+import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -25,6 +27,7 @@ import logger
 
 class Toolbar(val tools: Tools) {
     val selectedButtonState = mutableStateOf(SelectedTool.NOTHING)
+
     @Composable
     fun draw(
         modifier: Modifier,
@@ -32,12 +35,13 @@ class Toolbar(val tools: Tools) {
         val selectedButton = remember { selectedButtonState }
         val columnColor = Color.Gray
         val columnProportion = mapOf(
-            "file" to 0.20f,
-            "lineSpacer" to 0.0025f,
-            "voidSpacer" to 0.06f,
-            "graph" to 0.10f,
-            "start" to 0.20f,
-            "arrow" to 0.20f,
+            "file" to 1f,
+            "lineSpacer" to 0.0125f,
+            "voidSpacer" to 0.3f,
+            "graph" to 0.5f,
+            "start" to 1f,
+            "algoButtons" to 1f,
+            "arrow" to 1f,
         )
         // percent
         val buttonRoundedCorner = 25
@@ -53,12 +57,11 @@ class Toolbar(val tools: Tools) {
             Row(modifier = Modifier.weight(columnProportion["file"]!!, true)) {
                 Button(
                     onClick = {
-//                TODO("NOT IMPLEMENTED YET")
+    //                TODO("NOT IMPLEMENTED YET")
                     },
                     modifier = Modifier
                         .weight(1f, true)
-                        .fillMaxHeight()
-                    ,
+                        .fillMaxHeight(),
                     shape = RectangleShape,
                     colors = ButtonDefaults.buttonColors(backgroundColor = columnColor)
                 ) {
@@ -76,12 +79,11 @@ class Toolbar(val tools: Tools) {
                 )
                 Button(
                     onClick = {
-//                TODO("NOT IMPLEMENTED YET")
+    //                TODO("NOT IMPLEMENTED YET")
                     },
                     modifier = Modifier
                         .weight(1f, true)
-                        .fillMaxHeight()
-                    ,
+                        .fillMaxHeight(),
                     shape = RectangleShape,
                     colors = ButtonDefaults.buttonColors(backgroundColor = columnColor)
                 ) {
@@ -111,11 +113,11 @@ class Toolbar(val tools: Tools) {
                 },
                 modifier = Modifier
                     .weight(columnProportion["graph"]!!, true)
-                    .fillMaxWidth()
-                ,
+                    .fillMaxWidth(),
                 shape = RoundedCornerShape(buttonRoundedCorner),
                 colors = ButtonDefaults.textButtonColors(
-                    backgroundColor = if (selectedButton.value == SelectedTool.ADD_VERTEX) Color.Blue else Color.Black)
+                    backgroundColor = if (selectedButton.value == SelectedTool.ADD_VERTEX) Color.Blue else Color.Black
+                )
             ) {
                 Text(
                     text = "+V",
@@ -135,8 +137,7 @@ class Toolbar(val tools: Tools) {
                 },
                 modifier = Modifier
                     .weight(columnProportion["graph"]!!, true)
-                    .fillMaxWidth()
-                ,
+                    .fillMaxWidth(),
                 shape = RoundedCornerShape(buttonRoundedCorner),
                 colors = ButtonDefaults.textButtonColors(
                     backgroundColor = if (selectedButton.value == SelectedTool.REMOVE_VERTEX) Color.Red else Color.Black
@@ -160,8 +161,7 @@ class Toolbar(val tools: Tools) {
                 },
                 modifier = Modifier
                     .weight(columnProportion["graph"]!!, true)
-                    .fillMaxWidth()
-                ,
+                    .fillMaxWidth(),
                 shape = RoundedCornerShape(buttonRoundedCorner),
                 colors = ButtonDefaults.textButtonColors(
                     backgroundColor = if (selectedButton.value == SelectedTool.ADD_EDGE) Color.Blue else Color.Black
@@ -185,11 +185,11 @@ class Toolbar(val tools: Tools) {
                 },
                 modifier = Modifier
                     .weight(columnProportion["graph"]!!, true)
-                    .fillMaxWidth()
-                ,
+                    .fillMaxWidth(),
                 shape = RoundedCornerShape(buttonRoundedCorner),
                 colors = ButtonDefaults.textButtonColors(
-                    backgroundColor = if (selectedButton.value == SelectedTool.REMOVE_EDGE) Color.Red else Color.Black)
+                    backgroundColor = if (selectedButton.value == SelectedTool.REMOVE_EDGE) Color.Red else Color.Black
+                )
             ) {
                 Text(
                     text = "-E",
@@ -217,12 +217,11 @@ class Toolbar(val tools: Tools) {
             )
             Button(
                 onClick = {
-//                TODO("NOT IMPLEMENTED YET")
+    //                TODO("NOT IMPLEMENTED YET")
                 },
                 modifier = Modifier
                     .weight(columnProportion["start"]!!, true)
-                    .fillMaxWidth()
-                ,
+                    .fillMaxWidth(),
                 shape = RoundedCornerShape(buttonRoundedCorner),
                 colors = ButtonDefaults.textButtonColors(
                     backgroundColor = Color.Black
@@ -240,6 +239,70 @@ class Toolbar(val tools: Tools) {
                     .fillMaxWidth()
                     .background(color = columnColor)
             )
+
+            Spacer(
+                modifier = Modifier
+                    .weight(columnProportion["lineSpacer"]!!, true)
+                    .fillMaxWidth()
+                    .background(color = Color.Black)
+            )
+            Spacer(
+                modifier = Modifier
+                    .weight(columnProportion["voidSpacer"]!!, true)
+                    .fillMaxWidth()
+                    .background(color = columnColor)
+            )
+            Row(
+                modifier = Modifier
+                    .weight(columnProportion["algoButtons"]!!)
+                    .fillMaxWidth()
+            ) {
+                Button(
+                    onClick = {
+    //                    TODO("NOT IMPLEMENTED YET")
+                    },
+                    modifier = Modifier
+                        .weight(1f, true)
+                        .fillMaxWidth()
+                        .fillMaxHeight(),
+                    shape = RoundedCornerShape(buttonRoundedCorner),
+                    colors = ButtonDefaults.textButtonColors(
+                        backgroundColor = Color.Black
+                    )
+                ) {
+                    Icon(
+                        Icons.Default.PlayArrow,
+                        contentDescription = null,
+                        tint = Color.Red
+                    )
+                }
+                Button(
+                    onClick = {
+    //                    TODO("NOT IMPLEMENTED YET")
+                    },
+                    modifier = Modifier
+                        .weight(1f, true)
+                        .fillMaxWidth()
+                        .fillMaxHeight(),
+                    shape = RoundedCornerShape(buttonRoundedCorner),
+                    colors = ButtonDefaults.textButtonColors(
+                        backgroundColor = Color.Black
+                    )
+                ) {
+                    Icon(
+                        Icons.Default.Done,
+                        contentDescription = null,
+                        tint = Color.Red
+                    )
+                }
+            }
+            Spacer(
+                modifier = Modifier
+                    .weight(columnProportion["voidSpacer"]!!, true)
+                    .fillMaxWidth()
+                    .background(color = columnColor)
+            )
+
             Spacer(
                 modifier = Modifier
                     .weight(columnProportion["lineSpacer"]!!, true)
@@ -259,13 +322,12 @@ class Toolbar(val tools: Tools) {
             ) {
                 Button(
                     onClick = {
-//                    TODO("NOT IMPLEMENTED YET")
+    //                    TODO("NOT IMPLEMENTED YET")
                     },
                     modifier = Modifier
                         .weight(1f, true)
                         .fillMaxWidth()
-                        .fillMaxHeight()
-                    ,
+                        .fillMaxHeight(),
                     shape = RoundedCornerShape(buttonRoundedCorner),
                     colors = ButtonDefaults.textButtonColors(
                         backgroundColor = Color.Black
@@ -279,13 +341,12 @@ class Toolbar(val tools: Tools) {
                 }
                 Button(
                     onClick = {
-//                    TODO("NOT IMPLEMENTED YET")
+    //                    TODO("NOT IMPLEMENTED YET")
                     },
                     modifier = Modifier
                         .weight(1f, true)
                         .fillMaxWidth()
-                        .fillMaxHeight()
-                    ,
+                        .fillMaxHeight(),
                     shape = RoundedCornerShape(buttonRoundedCorner),
                     colors = ButtonDefaults.textButtonColors(
                         backgroundColor = Color.Black
