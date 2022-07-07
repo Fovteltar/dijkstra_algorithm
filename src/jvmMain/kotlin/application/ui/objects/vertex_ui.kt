@@ -1,10 +1,10 @@
 package application.ui.objects
 
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -21,7 +21,7 @@ class VertexUI(val vertex: Vertex = Vertex(), private val tools: Tools) {
 
     @Composable
     fun draw() {
-        Canvas(
+        Surface(
             modifier = Modifier
                 .offset(x = topLeftOffset.x.dp, y = topLeftOffset.y.dp)
                 .size(VERTEX_SIZE.dp, VERTEX_SIZE.dp)
@@ -29,8 +29,8 @@ class VertexUI(val vertex: Vertex = Vertex(), private val tools: Tools) {
                 .clickable {
                     tools.notifyMe(sender = this)
                 },
-        ) {
-            drawCircle(Color.Blue, VERTEX_SIZE / 2f)
-        }
+            shape = CircleShape,
+            color = Color.Blue,
+        ) {}
     }
 }

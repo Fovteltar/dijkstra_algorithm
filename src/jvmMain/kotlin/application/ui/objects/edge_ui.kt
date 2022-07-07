@@ -104,11 +104,11 @@ class EdgeUI(val verticesUI: Pair<VertexUI, VertexUI>, private val tools: Tools)
                     width = size.x.dp,
                     height = size.y.dp
                 )
-                .clip(EdgeShape(startQuarter, start, end, end, LINE_WIDTH))
+                .clip(EdgeShape(startQuarter, start, end, LINE_WIDTH))
                 .clickable {
                     tools.notifyMe(this)
                 },
-            shape = EdgeShape(startQuarter, start, end, end, LINE_WIDTH),
+            shape = EdgeShape(startQuarter, start, end, LINE_WIDTH),
             color = Color.Red
         ) {}
     }

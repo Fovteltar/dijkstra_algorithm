@@ -10,15 +10,13 @@ import androidx.compose.ui.unit.LayoutDirection
 import logger
 import kotlin.math.*
 
-const val ARROW_WIDTH = 10f
-const val ARROW_HEIGHT = 10f
-
 class EdgeShape(
-    val startQuarter: Int,
-    val start: Offset,
-    val end: Offset,
-    val arrowPosition: Offset,
-    val lineWidth: Float
+    private val startQuarter: Int,
+    private val start: Offset,
+    private val end: Offset,
+    private val lineWidth: Float,
+    private val arrowWidth: Float = 10f,
+    private val arrowHeight: Float = 10f
 ): Shape {
     @Throws(IllegalStateException::class)
     override fun createOutline(
@@ -38,11 +36,11 @@ class EdgeShape(
 
             val dots = mutableMapOf(
                 "rectLeftTop" to Offset(x = start.x, y = start.y - lineWidth / 2),
-                "rectRightTop" to Offset(x = start.x + lengthBetweenSE - ARROW_WIDTH, y = start.y - lineWidth / 2),
-                "arrowLeftTop" to Offset(x = start.x + lengthBetweenSE - ARROW_WIDTH, y = start.y - lineWidth / 2 - ARROW_HEIGHT),
+                "rectRightTop" to Offset(x = start.x + lengthBetweenSE - arrowWidth, y = start.y - lineWidth / 2),
+                "arrowLeftTop" to Offset(x = start.x + lengthBetweenSE - arrowWidth, y = start.y - lineWidth / 2 - arrowHeight),
                 "arrowRightCenter" to Offset(x = start.x + lengthBetweenSE, y = start.y),
-                "arrowLeftBottom" to Offset(x = start.x + lengthBetweenSE - ARROW_WIDTH, y = start.y + lineWidth / 2 + ARROW_HEIGHT),
-                "rectRightBottom" to Offset(x = start.x + lengthBetweenSE - ARROW_WIDTH, y = start.y + lineWidth / 2),
+                "arrowLeftBottom" to Offset(x = start.x + lengthBetweenSE - arrowWidth, y = start.y + lineWidth / 2 + arrowHeight),
+                "rectRightBottom" to Offset(x = start.x + lengthBetweenSE - arrowWidth, y = start.y + lineWidth / 2),
                 "rectLeftBottom" to Offset(x = start.x, y = start.y + lineWidth / 2)
             )
 
