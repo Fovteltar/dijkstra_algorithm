@@ -10,6 +10,9 @@ import androidx.compose.ui.unit.LayoutDirection
 import logger
 import kotlin.math.*
 
+const val ARROW_WIDTH = 10f
+const val ARROW_HEIGHT = 10f
+
 class EdgeShape(
     val startQuarter: Int,
     val start: Offset,
@@ -30,12 +33,17 @@ class EdgeShape(
                     "\nend = $end" +
                     "\nsize = $size")
 
-            val length = sqrt((start.x - end.x).pow(2) + (start.y - end.y).pow(2))
-            val rectDots = mutableMapOf(
-                "leftTop" to Offset(x = start.x, y = start.y - lineWidth / 2),
-                "rightTop" to Offset(x = start.x + length, y = start.y - lineWidth / 2),
-                "rightBottom" to Offset(x = start.x + length, y = start.y + lineWidth / 2),
-                "leftBottom" to Offset(x = start.x, y = start.y + lineWidth / 2)
+            // SE - start and end
+            val lengthBetweenSE = sqrt((start.x - end.x).pow(2) + (start.y - end.y).pow(2))
+
+            val dots = mutableMapOf(
+                "rectLeftTop" to Offset(x = start.x, y = start.y - lineWidth / 2),
+                "rectRightTop" to Offset(x = start.x + lengthBetweenSE - ARROW_WIDTH, y = start.y - lineWidth / 2),
+                "arrowLeftTop" to Offset(x = start.x + lengthBetweenSE - ARROW_WIDTH, y = start.y - lineWidth / 2 - ARROW_HEIGHT),
+                "arrowRightCenter" to Offset(x = start.x + lengthBetweenSE, y = start.y),
+                "arrowLeftBottom" to Offset(x = start.x + lengthBetweenSE - ARROW_WIDTH, y = start.y + lineWidth / 2 + ARROW_HEIGHT),
+                "rectRightBottom" to Offset(x = start.x + lengthBetweenSE - ARROW_WIDTH, y = start.y + lineWidth / 2),
+                "rectLeftBottom" to Offset(x = start.x, y = start.y + lineWidth / 2)
             )
 
             val tan = abs(end.y - start.y) / abs(end.x - start.x)
@@ -64,31 +72,43 @@ class EdgeShape(
                 )
             }
 
-            val rectDotsWithRotation = mutableMapOf(
-                "leftTop" to rotate(rectDots["leftTop"]!!, angle),
-                "rightTop" to rotate(rectDots["rightTop"]!!, angle),
-                "rightBottom" to rotate(rectDots["rightBottom"]!!, angle),
-                "leftBottom" to rotate(rectDots["leftBottom"]!!, angle),
+            val dotsAfterRotation = mutableMapOf(
+                "rectLeftTop" to rotate(dots["rectLeftTop"]!!, angle),
+                "rectRightTop" to rotate(dots["rectRightTop"]!!, angle),
+                "arrowLeftTop" to rotate(dots["arrowLeftTop"]!!, angle),
+                "arrowRightCenter" to rotate(dots["arrowRightCenter"]!!, angle),
+                "arrowLeftBottom" to rotate(dots["arrowLeftBottom"]!!, angle),
+                "rectRightBottom" to rotate(dots["rectRightBottom"]!!, angle),
+                "rectLeftBottom" to rotate(dots["rectLeftBottom"]!!, angle),
             )
 
             logger.info("\n[EdgeShape]:" +
                     "\nWithoutRotation:" +
-                    "\nleftTop: ${rectDots["leftTop"]}" +
-                    "\nrightTop: ${rectDots["rightTop"]}" +
-                    "\nrightBottom: ${rectDots["rightBottom"]}" +
-                    "\nleftBottom: ${rectDots["leftBottom"]}" +
+                    "\nrectLeftTop: ${dots["rectLeftTop"]}" +
+                    "\nrectRightTop: ${dots["rectRightTop"]}" +
+                    "\narrowLeftTop: ${dots["arrowLeftTop"]}" +
+                    "\narrowRightCenter: ${dots["arrowRightCenter"]}" +
+                    "\narrowLeftBottom: ${dots["arrowLeftBottom"]}" +
+                    "\nrectRightBottom: ${dots["rectRightBottom"]}" +
+                    "\nrectLeftBottom: ${dots["rectLeftBottom"]}" +
                     "\nWithRotation:" +
-                    "\nleftTop: ${rectDotsWithRotation["leftTop"]}" +
-                    "\nrightTop: ${rectDotsWithRotation["rightTop"]}" +
-                    "\nrightBottom: ${rectDotsWithRotation["rightBottom"]}" +
-                    "\nleftBottom: ${rectDotsWithRotation["leftBottom"]}"
+                    "\nrectLeftTop: ${dotsAfterRotation["rectLeftTop"]}" +
+                    "\nrectRightTop: ${dotsAfterRotation["rectRightTop"]}" +
+                    "\narrowLeftTop: ${dotsAfterRotation["arrowLeftTop"]}" +
+                    "\narrowRightCenter: ${dotsAfterRotation["arrowRightCenter"]}" +
+                    "\narrowLeftBottom: ${dotsAfterRotation["arrowLeftBottom"]}" +
+                    "\nrectRightBottom: ${dotsAfterRotation["rectRightBottom"]}" +
+                    "\nrectLeftBottom: ${dotsAfterRotation["rectLeftBottom"]}"
             )
 
-            moveTo(rectDotsWithRotation["leftTop"]!!.x, rectDotsWithRotation["leftTop"]!!.y)
-            lineTo(rectDotsWithRotation["rightTop"]!!.x, rectDotsWithRotation["rightTop"]!!.y)
-            lineTo(rectDotsWithRotation["rightBottom"]!!.x, rectDotsWithRotation["rightBottom"]!!.y)
-            lineTo(rectDotsWithRotation["leftBottom"]!!.x, rectDotsWithRotation["leftBottom"]!!.y)
-            lineTo(rectDotsWithRotation["leftTop"]!!.x, rectDotsWithRotation["leftTop"]!!.y)
+            moveTo(dotsAfterRotation["rectLeftTop"]!!.x, dotsAfterRotation["rectLeftTop"]!!.y)
+            lineTo(dotsAfterRotation["rectRightTop"]!!.x, dotsAfterRotation["rectRightTop"]!!.y)
+            lineTo(dotsAfterRotation["arrowLeftTop"]!!.x, dotsAfterRotation["arrowLeftTop"]!!.y)
+            lineTo(dotsAfterRotation["arrowRightCenter"]!!.x, dotsAfterRotation["arrowRightCenter"]!!.y)
+            lineTo(dotsAfterRotation["arrowLeftBottom"]!!.x, dotsAfterRotation["arrowLeftBottom"]!!.y)
+            lineTo(dotsAfterRotation["rectRightBottom"]!!.x, dotsAfterRotation["rectRightBottom"]!!.y)
+            lineTo(dotsAfterRotation["rectLeftBottom"]!!.x, dotsAfterRotation["rectLeftBottom"]!!.y)
+            lineTo(dotsAfterRotation["rectLeftTop"]!!.x, dotsAfterRotation["rectLeftTop"]!!.y)
 
             close()
         }
