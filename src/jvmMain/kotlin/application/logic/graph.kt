@@ -19,8 +19,7 @@ class Graph(
                 vertices[vertex]?.remove(it.key)
                 edges.remove(it.key)
             }
-
-
+            vertices.remove(vertex)
         }
     }
 

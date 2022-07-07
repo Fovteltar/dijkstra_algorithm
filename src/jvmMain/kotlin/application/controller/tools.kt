@@ -95,8 +95,9 @@ class Tools(
 
     private fun removeVertex(vertexUI: VertexUI): Boolean {
         return try {
-            ui!!.graphUI.removeVertex(vertexUI)
+            val removedEdgesAmount = ui!!.graphUI.removeVertex(vertexUI)
             verticesAmount.value -= 1
+            edgesAmount.value -= removedEdgesAmount.toInt()
             true
         } catch (exception: Exception) {
             logger.info(exception.message)
