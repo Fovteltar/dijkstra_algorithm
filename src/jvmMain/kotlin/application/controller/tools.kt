@@ -89,7 +89,7 @@ class Tools(
         vertexUI.topLeftOffset = topLeftOffset
         ui!!.graphUI.addVertex(vertexUI)
         verticesAmount.value += 1
-        logger.info("[Tools] Vertex was added with offset: $offset")
+//        logger.info("[Tools] Vertex was added with offset: $offset")
         return true
     }
 
