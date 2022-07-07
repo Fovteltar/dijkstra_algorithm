@@ -53,6 +53,7 @@ val mainClass = "MainKt" // Replace this, your project main name
 
 tasks {
     register("fatJar", Jar::class.java) {
+        destinationDirectory.set(file("$rootDir/jar"))
         archiveClassifier.set("all")
         duplicatesStrategy = DuplicatesStrategy.EXCLUDE
         manifest {
