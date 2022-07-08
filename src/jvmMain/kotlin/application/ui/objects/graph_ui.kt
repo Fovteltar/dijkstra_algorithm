@@ -17,24 +17,30 @@ class GraphUI(private val graph: Graph) {
         verticesUI[edgeUI.verticesUI.second]!!.addInputEdge(edgeUI.verticesUI.first, edgeUI)
     }
 
-    private fun removeUIEdgesTo(vertexUI: VertexUI){
+    private fun removeUIEdgesTo(vertexUI: VertexUI):UInt{
+        var removedEdgesAmount = 0u
         val toDeleteEdgesInfo = verticesUI[vertexUI]
         toDeleteEdgesInfo?.outGoingEdges?.values?.forEach {
             verticesUI[it.verticesUI.second]?.inputGoingEdges?.remove(it.verticesUI.first)
+            ++removedEdgesAmount
         }
         toDeleteEdgesInfo?.outGoingEdges?.clear()
 
-        toDeleteEdgesInfo?.inputGoingEdges?.values?.forEach {
-            verticesUI[it.verticesUI.first]?.outGoingEdges?.remove(it.verticesUI.second)
-        }
-        toDeleteEdgesInfo?.inputGoingEdges?.clear()
+//        toDeleteEdgesInfo?.inputGoingEdges?.values?.forEach {
+//            verticesUI[it.verticesUI.first]?.outGoingEdges?.remove(it.verticesUI.second)
+//            ++removedEdgesAmount
+//        }
+//        toDeleteEdgesInfo?.inputGoingEdges?.clear()
+        return removedEdgesAmount
     }
 
-    fun removeVertex(vertexUI: VertexUI) {
+    fun removeVertex(vertexUI: VertexUI):UInt {
         if (verticesUI.containsKey(vertexUI)) {
-            val edgesUIToRemove = removeUIEdgesTo(vertexUI)
+            val removedEdgesAmount = removeUIEdgesTo(vertexUI)
             verticesUI.remove(vertexUI)
+            return removedEdgesAmount
         }
+        return 0u
     }
 
     fun removeEdge(edgeUI: EdgeUI) {

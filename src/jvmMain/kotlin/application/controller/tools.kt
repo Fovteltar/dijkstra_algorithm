@@ -1,10 +1,10 @@
 package application.controller
 
-import Logic
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.input.key.*
+import application.logic.Logic
 import application.ui.UI
 import application.ui.objects.EdgeUI
 import application.ui.objects.VERTEX_SIZE
