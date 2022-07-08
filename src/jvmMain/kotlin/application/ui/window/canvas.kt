@@ -50,11 +50,11 @@ class Canvas(val tools: Tools) {
                         canvasOffset.value += pan
 //                        canvasOffset.value = (canvasOffset.value + centroid / oldScale) -
 //                                (centroid / scale.value + pan / oldScale)
-                        logger.info("""
-                            [Canvas] detectTransformGestures:
-                                offset = ${canvasOffset.value}
-                                scale = ${scale.value}
-                        """.trimIndent())
+//                        logger.info("""
+//                            [Canvas] detectTransformGestures:
+//                                offset = ${canvasOffset.value}
+//                                scale = ${scale.value}
+//                        """.trimIndent())
                     }
                 }
                 .pointerInput(Unit) {

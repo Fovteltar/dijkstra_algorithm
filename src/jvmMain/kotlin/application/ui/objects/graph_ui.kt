@@ -26,11 +26,11 @@ class GraphUI(private val graph: Graph) {
         }
         toDeleteEdgesInfo?.outGoingEdges?.clear()
 
-//        toDeleteEdgesInfo?.inputGoingEdges?.values?.forEach {
-//            verticesUI[it.verticesUI.first]?.outGoingEdges?.remove(it.verticesUI.second)
-//            ++removedEdgesAmount
-//        }
-//        toDeleteEdgesInfo?.inputGoingEdges?.clear()
+        toDeleteEdgesInfo?.inputGoingEdges?.values?.forEach {
+            verticesUI[it.verticesUI.first]?.outGoingEdges?.remove(it.verticesUI.second)
+            ++removedEdgesAmount
+        }
+        toDeleteEdgesInfo?.inputGoingEdges?.clear()
         return removedEdgesAmount
     }
 
