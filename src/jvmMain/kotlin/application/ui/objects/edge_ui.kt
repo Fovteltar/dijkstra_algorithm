@@ -2,15 +2,21 @@ package application.ui.objects
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.Surface
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import application.controller.Tools
+import application.ui.dialog.EdgeDialog
 import logger
 import logic.Edge
 import kotlin.math.abs
@@ -22,6 +28,7 @@ const val LINE_WIDTH = 10f
 
 class EdgeUI(val verticesUI: Pair<VertexUI, VertexUI>, private val tools: Tools) {
     val edge = Edge(Pair(verticesUI.first.vertex, verticesUI.second.vertex))
+    val edgeDialog = EdgeDialog()
     @Composable
     fun draw() {
         val size = Offset(
@@ -88,19 +95,24 @@ class EdgeUI(val verticesUI: Pair<VertexUI, VertexUI>, private val tools: Tools)
                 else -> throw Error("Incorrect startQuarter value")
             }
 
+        val offset = Offset(
+            x = min(
+                verticesUI.first.topLeftOffset.x,
+                verticesUI.second.topLeftOffset.x,
+            ),
+            y = min(
+                verticesUI.first.topLeftOffset.y,
+                verticesUI.second.topLeftOffset.y,
+            )
+        )
+
         Surface(
             modifier = Modifier
                 .offset(
-                    x = min(
-                        verticesUI.first.topLeftOffset.x,
-                        verticesUI.second.topLeftOffset.x,
-                    ).dp,
-                    y = min(
-                        verticesUI.first.topLeftOffset.y,
-                        verticesUI.second.topLeftOffset.y,
-                    ).dp
+                    x = offset.x.dp,
+                    y = offset.y.dp
                 )
-                .size(
+                .requiredSize(
                     width = size.x.dp,
                     height = size.y.dp
                 )
@@ -108,8 +120,72 @@ class EdgeUI(val verticesUI: Pair<VertexUI, VertexUI>, private val tools: Tools)
                 .clickable {
                     tools.notifyMe(this)
                 },
-            shape = EdgeShape(startQuarter, start, end, LINE_WIDTH),
+//            shape = EdgeShape(startQuarter, start, end, LINE_WIDTH),
             color = Color.Red
-        ) {}
+        ) {
+            println("x = " +
+                    "${min(
+                        verticesUI.first.topLeftOffset.x,
+                        verticesUI.second.topLeftOffset.x,
+                    ).dp}" +
+                    "\n" +
+                    "y = ${min(
+                        verticesUI.first.topLeftOffset.y,
+                        verticesUI.second.topLeftOffset.y,
+                    ).dp}")
+        }
+
+        // Imagine edge ------->. weightPos - near witch part of edge weight will be drawn
+        // Must be in range: (0; 1]
+        val weightPos = 2 / 3f
+
+        val centerEdgeOffset = when(startQuarter) {
+            1 -> {
+                Offset(
+                    x = offset.x + start.x - weightPos * abs(start.x - end.x),
+                    y = offset.y + start.y + weightPos * abs(start.y - end.y)
+                )
+            }
+            2 -> {
+                Offset(
+                    x = offset.x + start.x + weightPos * abs(start.x - end.x),
+                    y = offset.y + start.y + weightPos * abs(start.y - end.y)
+                )
+            }
+            3 -> {
+                Offset(
+                    x = offset.x + start.x + weightPos * abs(start.x - end.x),
+                    y = offset.y + start.y - weightPos * abs(start.y - end.y)
+                )
+            }
+            4 -> {
+                Offset(
+                    x = offset.x + start.x - weightPos * abs(start.x - end.x),
+                    y = offset.y + start.y - weightPos * abs(start.y - end.y)
+                )
+            }
+            else -> {throw Error("Incorrect startQuarter value")}
+        }
+
+        val switcher = remember { mutableStateOf(false) }
+        val isDialogOpen = remember { mutableStateOf(true) }
+        logger.debug("START: $start, END: $end, CENTER: $centerEdgeOffset")
+
+        logger.debug("edgeDialog.text: ${edgeDialog.textState.value}")
+        Text(
+            text = edgeDialog.textState.value,
+            color = Color.Black,
+            fontSize = 18.sp,
+            modifier = Modifier
+                .offset(x = centerEdgeOffset.x.dp, y = centerEdgeOffset.y.dp)
+                .clickable {
+                    isDialogOpen.value = true
+                }
+                .size(36.dp, 24.dp)
+        )
+        if (isDialogOpen.value == true) {
+            edgeDialog.draw(isDialogOpen, switcher)
+        }
+        edge.weight = edgeDialog.textState.value.toInt()
     }
 }
