@@ -4,32 +4,54 @@ import logic.Graph
 
 
 class GraphUI(private val graph: Graph) {
-    val verticesUI: MutableMap<VertexUI, MutableList<EdgeUI>> = mutableMapOf()
-    val edgesUI: MutableMap<EdgeUI, Unit> = mutableMapOf()
+    val verticesUI: MutableMap<VertexUI, VertexInfoUI> = mutableMapOf()
 
     fun addVertex(vertexUI: VertexUI) {
         graph.addVertex(vertexUI.vertex)
-        verticesUI[vertexUI] = mutableListOf()  ////
+        verticesUI[vertexUI] = VertexInfoUI()  ////
     }
     fun addEdge(edgeUI: EdgeUI) {
         graph.addEdge(edgeUI.edge)
-        edgesUI[edgeUI] = Unit
-        verticesUI[edgeUI.verticesUI.first]!!.add(edgeUI)////
+
+        verticesUI[edgeUI.verticesUI.first]!!.addOutGoingEdge(edgeUI.verticesUI.second, edgeUI)
+        verticesUI[edgeUI.verticesUI.second]!!.addInputEdge(edgeUI.verticesUI.first, edgeUI)
+    }
+
+    private fun removeUIEdgesTo(vertexUI: VertexUI){
+        val toDeleteEdgesInfo = verticesUI[vertexUI]
+        toDeleteEdgesInfo?.outGoingEdges?.values?.forEach {
+            verticesUI[it.verticesUI.second]?.inputGoingEdges?.remove(it.verticesUI.first)
+        }
+        toDeleteEdgesInfo?.outGoingEdges?.clear()
+
+        toDeleteEdgesInfo?.inputGoingEdges?.values?.forEach {
+            verticesUI[it.verticesUI.first]?.outGoingEdges?.remove(it.verticesUI.second)
+        }
+        toDeleteEdgesInfo?.inputGoingEdges?.clear()
     }
 
     fun removeVertex(vertexUI: VertexUI) {
         if (verticesUI.containsKey(vertexUI)) {
-            graph.removeVertex(vertexUI.vertex)
+            val edgesUIToRemove = removeUIEdgesTo(vertexUI)
             verticesUI.remove(vertexUI)
-//            verticesUI[vertexUI]?.removeAll()   создать удаление всех рёбер
         }
     }
 
     fun removeEdge(edgeUI: EdgeUI) {
-        if (edgesUI.containsKey(edgeUI)) {
+        if (verticesUI[edgeUI.verticesUI.first]?.outGoingEdges?.values?.contains(edgeUI) == true) {
             graph.removeEdge(edgeUI.edge)
-            edgesUI.remove(edgeUI)
-            verticesUI[edgeUI.verticesUI.first]!!.remove(edgeUI)        ////
+            verticesUI[edgeUI.verticesUI.first]?.outGoingEdges?.remove(edgeUI.verticesUI.second)
+            verticesUI[edgeUI.verticesUI.second]?.inputGoingEdges?.remove(edgeUI.verticesUI.first)
         }
     }
+
+    fun getEdges():MutableList<EdgeUI>{
+        val edges:MutableList<EdgeUI> = mutableListOf()
+        verticesUI.keys.forEach {
+            val currentEdges = verticesUI[it]!!.getOutGoingEdges()
+            edges.addAll(currentEdges)
+        }
+        return edges
+    }
+
 }

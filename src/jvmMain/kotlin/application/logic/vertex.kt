@@ -1,5 +1,12 @@
 package logic
 
 class Vertex() {
-    var vertexName: String = this.hashCode().toString()
+    var vertexName = this.hashCode().toString()
+    constructor(name:String) : this() {
+        vertexName = name
+    }
+
+    override fun toString(): String {
+        return vertexName
+    }
 }

@@ -1,11 +1,12 @@
 package logic
 
+import application.logic.FileInfo
 import  java.io.File
 import java.io.IOException
 
-
 class GraphFileReader(fileName: String) {
     var fileName = String()
+    val parser = Parser()
 
     init {
         this.fileName = fileName
@@ -16,77 +17,53 @@ class GraphFileReader(fileName: String) {
         val lineList = mutableListOf<String>()
         File(fileName).useLines {
             for (i in it) {
-                lineList.add(i)
+                if (i.isNotBlank())lineList.add(i.trim())
             }
         }
         return lineList
     }
 
     @Throws(IOException::class)
-    private fun fileValidCheck(lineList: MutableList<String>):Int {
-        var startIsSource = false
-
-        val start = if (lineList[0].split(' ').size == 1) lineList[0] else throw IOException("Incorrect start vertex name")
-        var step = -1
-        var firstLine = 2
-        //TO DO: Откомментировать все проверки, иначе .....
-        if (lineList[1].all { char -> char.isDigit() } &&
-            lineList[1].toInt() >= 0) step = lineList[1].toInt() //Проверка корректно ли задан шаг алгоритма
-        else if (lineList[1].split(' ').size == 3) firstLine = 1 // Шаг может и не задаваться,
-                                                                           // поэтому начала чтения строк меняем
-        else if (!lineList[1].all { char -> char.isDigit() } ||
-            lineList[1].toInt() < 0)                             // Проверка на то задан ли Шаг некорректно
-            throw IOException("Algorithm step specified incorrectly")
-        else throw IOException("Something wrong happend\n1: \"${lineList[1]}\"") // Неожидаемое поведение строки
-                                                                                  // Указываем строку и её содержимое
-        for (i in firstLine until lineList.size) {
-            // Для описания ребра требуется 3 элемента <Вершина1><пробел><Вершина2><пробел><вес>
-            if (lineList[i].split(' ').size != 3) { //если элементов не 3, то это точно не то, что нам надо
-                throw IOException(
-                    "Something wrong happend\n" +
-                            "${i + 1}: \"${lineList[i]}\""
-                )
-            }
-            val (source, destination, cost) = lineList[i].split(' ') // элементов точно три
-            if (start.equals(source)) startIsSource = true // Проверка можно ли куда-нибудь попасть из старта
-            if (!cost.all { char -> char.isDigit() } ||  // Проверка является ли стоимость положительным числом
-                cost.toInt() < 0) throw IOException("Invalid edge weight\n${i + 1}: $source $destination $cost")
-                //Если не является кидаем исключениие с указанием строки
-        }
-        if (!startIsSource) throw IOException("Start vertex is isolated or have no outgoing edges")
-        return step
-    }
-
-    @Throws(IOException::class)
-    fun graphFromFile(): Triple<Graph, Vertex, Int> {
-        val lineList = getFileStrings()
-        var step = fileValidCheck(lineList)
-
-        val vertexConformity: MutableMap<String, Vertex> = mutableMapOf()
-        vertexConformity[lineList[0]] = Vertex()
-        val start = vertexConformity[lineList[0]]
-        val algorithmStep = lineList[1].toInt()
-
+    fun graphFromFile(): FileInfo{
+        parser.parse(getFileStrings())
+        val start = Vertex(parser.getStartVertexName())
         val graph = Graph()
-        graph.addVertex(start!!)
-        for (i in 1 until lineList.size) {
-            if (lineList[i].length >= 5) {
-                val (source, destination, cost) = lineList[i].split(' ')
-                if (source !in vertexConformity) {
-                    val v = Vertex()
-                    v.vertexName = source
-                    vertexConformity[source] = v
-                    graph.addVertex(vertexConformity[source]!!)
+        graph.addVertex(start)
+        val coordinatesInformation = parser.getCoordsInformation()
+        val coords:MutableMap<Vertex, Pair<Float, Float>?> = mutableMapOf()
+        val vertexNameConformity: MutableMap<String, Vertex> = mutableMapOf()
+        vertexNameConformity[start.vertexName] = start
+
+        val edges:HashSet<Pair<String, String>> = hashSetOf()
+        for ((source, destination, weight) in parser.getGraphInformation()){
+            if (edges.contains(Pair(source, destination))) continue //если такое ребро уже есть, то остальные не учитываем
+            //Проверка есть ли новая вершина в наборе соответствий вершин
+            if (source !in vertexNameConformity){
+                vertexNameConformity[source] = Vertex(source)
+                graph.addVertex(vertexNameConformity[source]!!)
+            }
+            if (destination !in vertexNameConformity) {
+                vertexNameConformity[destination] = Vertex(destination)
+                graph.addVertex(vertexNameConformity[destination]!!)
+            }
+            graph.addEdge(Edge(Pair(vertexNameConformity[source]!!, vertexNameConformity[destination]!!), weight))
+            edges.add(Pair(source, destination))
+            // Проверка добавления координат
+            if(coordinatesInformation != null){ // если координаты заданы
+                if(!coords.containsKey(vertexNameConformity[source])){
+                    if(coordinatesInformation.containsKey(source)) {
+                        coords[vertexNameConformity[source]!!] = coordinatesInformation[source]!!
+                    }
+                    else coords[vertexNameConformity[source]!!] = null
                 }
-                if (destination !in vertexConformity) {
-                    val v = Vertex()
-                    v.vertexName = destination
-                    vertexConformity[destination] = v
-                    graph.addVertex(vertexConformity[destination]!!)
+                if(!coords.containsKey(vertexNameConformity[destination]) ){
+                    if(coordinatesInformation.containsKey(destination)) {
+                        coords[vertexNameConformity[destination]!!] = coordinatesInformation[destination]!!
+                    }
+                    else coords[vertexNameConformity[destination]!!] = null
                 }
-                graph.addEdge(Edge(Pair(vertexConformity[source]!!, vertexConformity[destination]!!), cost.toInt()))
             }
         }
-        return Triple(graph, start, algorithmStep)
+        return FileInfo(graph, start, coords, parser.getStateNumber())
     }
 }

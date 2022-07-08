@@ -8,4 +8,5 @@ fun main() {
     BasicConfigurator.configure()
     val application = Application()
     application.start()
+
 }

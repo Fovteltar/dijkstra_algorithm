@@ -1,33 +1,60 @@
 package logic
 
+import application.logic.VertexInfo
+
 class Graph(
-    val vertices: MutableMap<Vertex, MutableMap<Edge, Unit>> = mutableMapOf(),
-    val edges: MutableMap<Edge, Unit> = mutableMapOf()
+    val vertices: MutableMap<Vertex, VertexInfo> = mutableMapOf(),
 ) {
     fun addVertex(vertex: Vertex) {
-        vertices[vertex] = mutableMapOf()  //init
+        vertices[vertex] = VertexInfo()  //init
     }
     fun addEdge(edge: Edge) {
-        edges[edge] = Unit
-        vertices[edge.vertices.first]?.set(edge, Unit)
+        if(vertices.containsKey(edge.vertices.first) && vertices.containsKey(edge.vertices.second)){
+            vertices[edge.vertices.first]!!.addOutGoingEdge(edge.vertices.second, edge)
+            vertices[edge.vertices.second]!!.addInputEdge(edge.vertices.first, edge)
+        }
+    }
+
+    private fun removeEdgesTo(vertex:Vertex){
+        val toDeleteEdgesInfo = vertices[vertex]
+
+        toDeleteEdgesInfo?.outGoingEdges?.values?.forEach {
+            vertices[it.vertices.second]?.inputGoingEdges?.remove(it.vertices.first)
+        }
+        toDeleteEdgesInfo?.outGoingEdges?.clear()
+
+        toDeleteEdgesInfo?.inputGoingEdges?.values?.forEach {
+            vertices[it.vertices.first]?.outGoingEdges?.remove(it.vertices.second)
+        }
+        toDeleteEdgesInfo?.inputGoingEdges?.clear()
     }
 
     fun removeVertex(vertex: Vertex) {
         if (vertices.containsKey(vertex)) {
-            val toDeleteEdges = vertices[vertex]
-            toDeleteEdges?.forEach {
-                vertices[vertex]?.remove(it.key)
-                edges.remove(it.key)
-            }
-
-
+            removeEdgesTo(vertex)
+            vertices.remove(vertex)
         }
     }
 
     fun removeEdge(edge: Edge) {
-        if (edges.containsKey(edge)) {
-            edges.remove(edge)
-            vertices[edge.vertices.first]!!.remove(edge)
+        if (vertices[edge.vertices.first]?.outGoingEdges?.values?.contains(edge) == true){
+            vertices[edge.vertices.first]?.outGoingEdges?.remove(edge.vertices.second)
+            vertices[edge.vertices.second]?.inputGoingEdges?.remove(edge.vertices.first)
         }
+    }
+
+    fun getDestinations(vertex:Vertex):MutableSet<Edge>?{
+        if(vertex in vertices.keys){
+            val dests:MutableSet<Edge> = mutableSetOf()
+            vertices[vertex]?.outGoingEdges?.values?.forEach {
+                dests.add(it)
+            }
+          return dests
+        }
+        return null
+    }
+
+    fun getVertices():MutableSet<Vertex>{
+        return vertices.keys
     }
 }
