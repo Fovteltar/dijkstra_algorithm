@@ -8,9 +8,9 @@ Summer practice ETU 2022
 
 ▶	Запуск приложения: java -jar ./jar/graphic_test-1.0-SNAPSHOT-all.jar (из самого верхнего уровня)
 
-🛠	Запуск со сборкой: gradle run
+🛠  Запуск со сборкой: gradle run
 
-🔨	Сборка в виде jar: gradle fatJar (Output в папку jar)
+🔨  Сборка в виде jar: gradle fatJar (Output в папку jar)
 
 ## Необходимо для запуска
 
@@ -20,3 +20,9 @@ Summer practice ETU 2022
 •	kotlin("multiplatform")
 
 •	org.jetbrains.compose
+
+• org.slf4j:slf4j-api:2.0.0-alpha7
+
+• org.slf4j:slf4j-log4j12:2.0.0-alpha7
+
+• io.github.microutils:kotlin-logging-jvm:2.0.11
