@@ -1,7 +1,7 @@
 package application
 
+import Logic
 import application.controller.Tools
-import application.logic.Logic
 import application.ui.UI
 
 class Application(

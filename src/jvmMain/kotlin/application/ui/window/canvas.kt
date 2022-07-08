@@ -80,7 +80,7 @@ class Canvas(val tools: Tools) {
             }
 
             if (edgesAmount.value > 0) {
-                for (edgeUI in tools.ui?.graphUI?.edgesUI!!.keys) {
+                for (edgeUI in tools.ui?.graphUI?.getEdges()!!) {
                     edgeUI.draw()
                 }
             }
