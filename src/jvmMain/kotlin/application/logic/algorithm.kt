@@ -1,20 +1,21 @@
 package logic
 
+
 import kotlin.math.min
 
 class Algorithm {
-    fun dijkstraAlgorithm(graph: Graph, start: Vertex): MutableList<Pair<Vertex, MutableMap<Vertex, Int>>> {
-        val solution_list: MutableList<Pair<Vertex, MutableMap<Vertex, Int>>> = mutableListOf()
+    fun dijkstraAlgorithm(graph: Graph, start: Vertex): StateMachine {
+        val stateMachine = StateMachine(graph, start)
         val closed: MutableSet<Vertex> = mutableSetOf()
         val costs = mutableMapOf<Vertex, Int>()
         val queue = ArrayDeque<Vertex>()
         queue.add(start)
-        costs.put(start, 0)
+        costs[start] = 0
 
         while (!queue.isEmpty()) {
             val current = queue.removeFirst()
             if (current in closed) continue
-            val dests = graph.vertices[current]?.keys
+            val dests = graph.getDestinations(current)
             val part_solution: MutableMap<Vertex, Int> = mutableMapOf()
             dests?.forEach {
                 val new_cost = costs[current]!! + it.weight
@@ -28,11 +29,11 @@ class Algorithm {
                     costs[it.vertices.second] = new_cost
                     part_solution[it.vertices.second] = costs[it.vertices.second]!!
                 }
+                stateMachine.addNextState(part_solution, current)
                 queue.add(it.vertices.second)
             }
-            solution_list.add(Pair(current, part_solution))
             closed.add(current)
         }
-        return solution_list
+        return stateMachine
     }
 }
