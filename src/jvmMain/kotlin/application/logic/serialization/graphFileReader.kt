@@ -1,6 +1,6 @@
 package logic
 
-import application.logic.FileInfo
+import application.logic.serialization.FileInfo
 import  java.io.File
 import java.io.IOException
 
@@ -24,7 +24,7 @@ class GraphFileReader(fileName: String) {
     }
 
     @Throws(IOException::class)
-    fun graphFromFile(): FileInfo{
+    fun graphFromFile(): FileInfo {
         parser.parse(getFileStrings())
         val start = Vertex(parser.getStartVertexName())
         val graph = Graph()
