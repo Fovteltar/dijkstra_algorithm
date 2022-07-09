@@ -26,10 +26,11 @@ class EdgeShape(
     ): Outline {
         val path = Path().apply {
             reset()
-            logger.info("\n[EdgeShape]" +
+            logger.debug(
                     "\nstart = $start" +
                     "\nend = $end" +
-                    "\nsize = $size")
+                    "\nsize = $size"
+            )
 
             // SE - start and end
             val lengthBetweenSE = sqrt((start.x - end.x).pow(2) + (start.y - end.y).pow(2))
@@ -53,14 +54,14 @@ class EdgeShape(
                 2 -> { atan(tan) }
                 3 -> { atan(-tan) }
                 4 -> { degToRad(180f) + atan(tan) }
-                else -> { throw Exception("[EdgeShape] Wrong startQuarter") }
+                else -> { throw Exception("Wrong startQuarter") }
             }
 
-            logger.info("\n[EdgeShape]" +
-                    "\ntan = $tan" +
-                    "\nangle = $angle" +
-                    "\nstartQuarter = $startQuarter"
-                    )
+            logger.debug(
+                "\ntan = $tan" +
+                "\nangle = $angle" +
+                "\nstartQuarter = $startQuarter"
+            )
 
             // rotate near dot start
             val rotate = { dot: Offset, angle: Float ->
@@ -80,7 +81,7 @@ class EdgeShape(
                 "rectLeftBottom" to rotate(dots["rectLeftBottom"]!!, angle),
             )
 
-            logger.info("\n[EdgeShape]:" +
+            logger.debug(
                     "\nWithoutRotation:" +
                     "\nrectLeftTop: ${dots["rectLeftTop"]}" +
                     "\nrectRightTop: ${dots["rectRightTop"]}" +

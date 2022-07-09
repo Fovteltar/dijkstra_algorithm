@@ -47,27 +47,28 @@ class Canvas(val tools: Tools) {
                 .background(color = Color.White)
                 .pointerInput(Unit) {
                     detectTransformGestures { centroid, pan, zoom, rotation ->
-                        canvasOffset.value += pan
-//                        canvasOffset.value = (canvasOffset.value + centroid / oldScale) -
-//                                (centroid / scale.value + pan / oldScale)
-//                        logger.info("""
-//                            [Canvas] detectTransformGestures:
-//                                offset = ${canvasOffset.value}
-//                                scale = ${scale.value}
-//                        """.trimIndent())
+                        canvasOffset.value -= pan
                     }
                 }
                 .pointerInput(Unit) {
                     detectTapGestures { offset ->
-                        logger.info("[Canvas] detectTapGestures: offset = $offset")
-                        tools.notifyMe(Pair(getSuper(), offset - canvasOffset.value))
+                        val centerOffset = tools.ui?.centerCanvasSize
+                        val realTapOffset = (offset - centerOffset!! + canvasOffset.value) / scale.value + centerOffset
+                        logger.info("detectTapGestures: realTapOffset = $realTapOffset" +
+                                "\ndetectTapGestures: canvasOffset = ${canvasOffset.value}")
+                        tools.notifyMe(
+                            Pair(
+                                first = getSuper(),
+                                second = realTapOffset
+                            )
+                        )
                     }
                 }
                 .graphicsLayer {
-                    translationX = canvasOffset.value.x
-                    translationY = canvasOffset.value.y
                     scaleX = scale.value
                     scaleY = scale.value
+                    translationX = -canvasOffset.value.x
+                    translationY = -canvasOffset.value.y
                 }
                 .composed { modifier }
         ) {
