@@ -10,11 +10,14 @@ import application.ui.objects.EdgeUI
 import application.ui.objects.VERTEX_SIZE
 import application.ui.objects.VertexUI
 import application.ui.window.Canvas
+import application.ui.window.Toolbar
 import logger
+import logic.Algorithm
+import logic.StateMachine
 import logic.Vertex
 
 enum class SelectedTool {
-    NOTHING, ADD_VERTEX, REMOVE_VERTEX, ADD_EDGE, REMOVE_EDGE
+    NOTHING, ADD_VERTEX, REMOVE_VERTEX, ADD_EDGE, REMOVE_EDGE, START_ALGORITHM
 }
 
 class Tools(
@@ -26,6 +29,19 @@ class Tools(
     val edgesAmount = mutableStateOf(0)
 
     private var vertexSelected = Pair<Boolean, VertexUI?>(false, null)
+
+    private val algorithm = Algorithm()
+
+    private lateinit var stateMachine: StateMachine
+    var stateIndex = 0u
+    val maxStateIndex: UInt
+        get() {
+            return stateMachine.size.toUInt() - 1u
+        }
+    val stateNow: Pair<MutableMap<Vertex, String>, Vertex>?
+        get() {
+            return stateMachine.getState(stateIndex.toInt())
+        }
 
     @OptIn(ExperimentalComposeUiApi::class)
     fun notifyMe(sender: Any) {
@@ -43,6 +59,30 @@ class Tools(
                         SelectedTool.ADD_VERTEX -> {
                             logger.info("[Tools] Canvas event, selectedTool = $selectedTool, so addVertex")
                             addVertex(sender.second as Offset)
+                        }
+                    }
+                }
+                else if (sender.first is Toolbar && sender.second is String) {
+                    when (sender.second) {
+                        "previousState" -> {
+                            if (stateIndex >= 1u) {
+                                stateIndex--
+                                ui?.graphUI?.verticesUI?.keys?.forEach {
+                                    it.weightInAlgorithmState.value = stateNow?.first?.get(it.vertex).toString()
+                                }
+                            }
+                        }
+                        "nextState" -> {
+                            if (stateIndex + 1u <= maxStateIndex) {
+                                stateIndex++
+                                ui?.graphUI?.verticesUI?.keys?.forEach {
+                                    it.weightInAlgorithmState.value = stateNow?.first?.get(it.vertex).toString()
+                                }
+                            }
+                        }
+                        else -> {
+                            logger.info("[Tools] Can't response :(" +
+                                    "\nsender = $sender")
                         }
                     }
                 }
@@ -67,6 +107,10 @@ class Tools(
                         logger.info {
                             "[Tools] Vertex selected: $vertexSelected"
                         }
+                    }
+                    SelectedTool.START_ALGORITHM -> {
+                        stateMachine = algorithm.dijkstraAlgorithm(graph = logic.graph, start = sender.vertex)
+                        ui?.graphUI?.verticesUI?.keys?.forEach { it.isAlgoStartedState.value = true}
                     }
                     else -> {}
                 }
@@ -127,4 +171,5 @@ class Tools(
             false
         }
     }
+
 }

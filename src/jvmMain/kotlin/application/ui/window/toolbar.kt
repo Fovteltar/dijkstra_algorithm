@@ -215,14 +215,14 @@ class Toolbar(val tools: Tools) {
             )
             Button(
                 onClick = {
-    //                TODO("NOT IMPLEMENTED YET")
+                    selectedButton.value = SelectedTool.START_ALGORITHM
                 },
                 modifier = Modifier
                     .weight(columnProportion["start"]!!, true)
                     .fillMaxWidth(),
                 shape = RoundedCornerShape(buttonRoundedCorner),
                 colors = ButtonDefaults.textButtonColors(
-                    backgroundColor = Color.Black
+                    backgroundColor = if (selectedButton.value == SelectedTool.START_ALGORITHM) Color.Red else Color.Black
                 )
             ) {
                 Text(
@@ -320,7 +320,7 @@ class Toolbar(val tools: Tools) {
             ) {
                 Button(
                     onClick = {
-    //                    TODO("NOT IMPLEMENTED YET")
+                        tools.notifyMe(Pair(getSuper(), "previousState"))
                     },
                     modifier = Modifier
                         .weight(1f, true)
@@ -339,7 +339,7 @@ class Toolbar(val tools: Tools) {
                 }
                 Button(
                     onClick = {
-    //                    TODO("NOT IMPLEMENTED YET")
+                        tools.notifyMe(Pair(getSuper(), "nextState"))
                     },
                     modifier = Modifier
                         .weight(1f, true)
@@ -361,4 +361,6 @@ class Toolbar(val tools: Tools) {
         tools.selectedTool = selectedButton.value
         logger.info(tools.selectedTool.name)
     }
+
+    private fun getSuper() = this
 }

@@ -12,9 +12,11 @@ class StateMachine(graph: Graph, start: Vertex) {
     init {
         graph.vertices.keys.forEach {
             states[it] = mutableListOf()
-            if (it == start) states[it]!!.add("0")
-            else states[it]!!.add("∞")
+            states[it]!!.add("∞")
         }
+        states[start]!!.remove("∞")
+        states[start]!!.add("0")
+
         currentStateVertexes.add(start)
     }
 
