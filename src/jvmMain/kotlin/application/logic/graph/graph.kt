@@ -57,4 +57,13 @@ class Graph(
     fun getVertices():MutableSet<Vertex>{
         return vertices.keys
     }
+
+    fun getEdges():MutableSet<Edge>{
+        val edges:MutableSet<Edge> = mutableSetOf()
+        vertices.keys.forEach {
+            edges.addAll(vertices[it]!!.outGoingEdges?.values)
+        }
+        return edges
+    }
+
 }

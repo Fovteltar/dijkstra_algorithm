@@ -1,6 +1,7 @@
 package logic
 
 import application.logic.serialization.FileInfo
+import application.logic.serialization.Parser
 import  java.io.File
 import java.io.IOException
 
