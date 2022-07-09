@@ -1,0 +1,9 @@
+graph{
+    a b 3
+    a c 1
+    a d 10
+    c b 1
+    c d 5
+    b d 2
+}
+start = a

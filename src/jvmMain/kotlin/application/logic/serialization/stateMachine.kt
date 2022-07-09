@@ -1,6 +1,6 @@
 package logic
 
-
+import application.logic.serialization.State
 
 
 class StateMachine(graph: Graph, start: Vertex) {
@@ -32,13 +32,13 @@ class StateMachine(graph: Graph, start: Vertex) {
         }
     }
 
-    fun getState(stateNumber:Int):Pair<MutableMap<Vertex, String>, Vertex>?{
+    fun getState(stateNumber:Int): State?{
         if(stateNumber in 0 until size){
             val state: MutableMap<Vertex, String> = mutableMapOf()
             states.keys.forEach {
                 state[it] = states[it]!![stateNumber]
             }
-            return Pair(state, currentStateVertexes[stateNumber])
+            return State(state, currentStateVertexes[stateNumber])
         }
         return null
     }
