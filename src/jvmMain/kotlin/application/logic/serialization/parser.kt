@@ -1,25 +1,14 @@
-package logic
-
+package application.logic.serialization
 import java.io.IOException
 
-enum class KeyWords{
-    COORDS,
-    GRAPH,
-    STATE_NUMBER,
-    START
-}
+
 
 class Parser{
-    private val keyWords:MutableMap<String, KeyWords> = mutableMapOf(
-        "coords" to KeyWords.COORDS,
-        "graph" to KeyWords.GRAPH,
-        "state" to KeyWords.STATE_NUMBER,
-        "start" to KeyWords.START)
+    private val keyWords:MutableMap<String, KeyWords> = TextKeyWords().keyWords
     private val keyWordsStartIndexes: MutableMap<KeyWords, Int> = mutableMapOf()
     private val keyWordsBlocksEnds: MutableMap<KeyWords, Int> = mutableMapOf()
     private var strings:MutableList<String> = mutableListOf()
-    private val START_OF_BLOCK = "{"
-    private val END_OF_BLOCK = "}"
+
 
     fun parse(strings:MutableList<String>){
         for (i in strings.indices)
@@ -75,13 +64,13 @@ class Parser{
                 var (source, destination, weight) = splitString
                 if (!startExistingFlag && (source == start || destination == start)) startExistingFlag = true
                 if (weight.toIntOrNull() == null || weight.toInt() < 0)
-                    throw IOException("Invalid edge weight\n${currentIndexString + 1}: ${strings[currentIndexString]}")
+                    throw IOException("Invalid edge weight\n${currentIndexString+2}: ${strings[currentIndexString]}")
                 ++currentIndexString
             }
             else break
         }
 
-        if(strings[currentIndexString] != END_OF_BLOCK) throw IOException("Wrong graph block")
+        if(strings[currentIndexString] != TextKeyWords().blockEnd) throw IOException("Wrong graph block")
         if(!startExistingFlag) throw  IOException("Start vertex not in graph")
         keyWordsBlocksEnds[KeyWords.GRAPH] = currentIndexString - 1
     }
@@ -108,7 +97,7 @@ class Parser{
             else break
         }
 
-        if(strings[currentIndexString] != END_OF_BLOCK) throw IOException("Wrong graph block")
+        if(strings[currentIndexString] != TextKeyWords().blockEnd) throw IOException("Wrong graph block")
         if(!startExistingFlag) throw  IOException("Start vertex not in coords")
         keyWordsBlocksEnds[KeyWords.COORDS] = currentIndexString - 1
     }
