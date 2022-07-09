@@ -5,6 +5,7 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.input.key.*
 import application.logic.Logic
+import application.logic.serialization.State
 import application.ui.UI
 import application.ui.objects.EdgeUI
 import application.ui.objects.VERTEX_SIZE
@@ -38,7 +39,7 @@ class Tools(
         get() {
             return stateMachine.size.toUInt() - 1u
         }
-    val stateNow: Pair<MutableMap<Vertex, String>, Vertex>?
+    val stateNow: State?
         get() {
             return stateMachine.getState(stateIndex.toInt())
         }
@@ -68,7 +69,7 @@ class Tools(
                             if (stateIndex >= 1u) {
                                 stateIndex--
                                 ui?.graphUI?.verticesUI?.keys?.forEach {
-                                    it.weightInAlgorithmState.value = stateNow?.first?.get(it.vertex).toString()
+                                    it.weightInAlgorithmState.value = stateNow?.vertexToCost?.get(it.vertex).toString()
                                 }
                             }
                         }
@@ -76,7 +77,7 @@ class Tools(
                             if (stateIndex + 1u <= maxStateIndex) {
                                 stateIndex++
                                 ui?.graphUI?.verticesUI?.keys?.forEach {
-                                    it.weightInAlgorithmState.value = stateNow?.first?.get(it.vertex).toString()
+                                    it.weightInAlgorithmState.value = stateNow?.vertexToCost?.get(it.vertex).toString()
                                 }
                             }
                         }

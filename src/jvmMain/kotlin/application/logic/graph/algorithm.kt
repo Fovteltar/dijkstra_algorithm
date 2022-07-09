@@ -1,6 +1,7 @@
 package logic
 
-
+import application.logic.graph.PriorityVertex
+import java.util.*
 import kotlin.math.min
 
 class Algorithm {
@@ -8,17 +9,17 @@ class Algorithm {
         val stateMachine = StateMachine(graph, start)
         val closed: MutableSet<Vertex> = mutableSetOf()
         val costs = mutableMapOf<Vertex, Int>()
-        val queue = ArrayDeque<Vertex>()
-        queue.add(start)
+        val queue = PriorityQueue<PriorityVertex>()
+        queue.add(PriorityVertex(start, Int.MAX_VALUE)) //
         costs[start] = 0
-
+        PriorityVertex(start, 1)
         while (!queue.isEmpty()) {
-            val current = queue.removeFirst()
-            if (current in closed) continue
-            val dests = graph.getDestinations(current)
+            val current = queue.poll()
+            if (current.vertex in closed) continue
+            val dests = graph.getDestinations(current.vertex)
             val part_solution: MutableMap<Vertex, Int> = mutableMapOf()
             dests?.forEach {
-                val new_cost = costs[current]!! + it.weight
+                val new_cost = costs[current.vertex]!! + it.weight
                 if (it.vertices.second in costs) {
                     val old_cost = costs[it.vertices.second]
                     costs[it.vertices.second] = min(costs[it.vertices.second]!!, new_cost)
@@ -29,10 +30,10 @@ class Algorithm {
                     costs[it.vertices.second] = new_cost
                     part_solution[it.vertices.second] = costs[it.vertices.second]!!
                 }
-                stateMachine.addNextState(part_solution, current)
-                queue.add(it.vertices.second)
+                stateMachine.addNextState(part_solution, current.vertex)
+                queue.add(PriorityVertex(it.vertices.second, it.weight))
             }
-            closed.add(current)
+            closed.add(current.vertex)
         }
         return stateMachine
     }
