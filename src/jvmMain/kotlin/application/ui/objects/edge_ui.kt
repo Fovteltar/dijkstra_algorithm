@@ -122,18 +122,9 @@ class EdgeUI(val verticesUI: Pair<VertexUI, VertexUI>, private val tools: Tools)
                 },
 //            shape = EdgeShape(startQuarter, start, end, LINE_WIDTH),
             color = Color.Red
-        ) {
-            println("x = " +
-                    "${min(
-                        verticesUI.first.topLeftOffset.x,
-                        verticesUI.second.topLeftOffset.x,
-                    ).dp}" +
-                    "\n" +
-                    "y = ${min(
-                        verticesUI.first.topLeftOffset.y,
-                        verticesUI.second.topLeftOffset.y,
-                    ).dp}")
-        }
+        ) {}
+
+        logger.debug("Offset: $offset")
 
         // Imagine edge ------->. weightPos - near witch part of edge weight will be drawn
         // Must be in range: (0; 1]
@@ -187,5 +178,6 @@ class EdgeUI(val verticesUI: Pair<VertexUI, VertexUI>, private val tools: Tools)
             edgeDialog.draw(isDialogOpen, switcher)
         }
         edge.weight = edgeDialog.textState.value.toInt()
+        logger.debug("startTL: ${verticesUI.first.topLeftOffset}, endTL: ${verticesUI.second.topLeftOffset}")
     }
 }
