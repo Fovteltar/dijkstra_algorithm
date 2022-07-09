@@ -26,7 +26,7 @@ class EdgeDialog {
                     value = text.value,
                     onValueChange = {
                         try {
-                            it.toInt()
+                            it.toUInt()
                             text.value = it
                             switcher.value = !switcher.value
                         }
