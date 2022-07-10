@@ -9,6 +9,7 @@ import application.logic.serialization.State
 import application.ui.UI
 import application.ui.objects.EdgeUI
 import application.ui.objects.VERTEX_SIZE
+import application.ui.objects.VertexColor
 import application.ui.objects.VertexUI
 import application.ui.window.Canvas
 import application.ui.window.Toolbar
@@ -66,20 +67,10 @@ class Tools(
                 else if (sender.first is Toolbar && sender.second is String) {
                     when (sender.second) {
                         "previousState" -> {
-                            if (stateIndex >= 1u) {
-                                stateIndex--
-                                ui?.graphUI?.verticesUI?.keys?.forEach {
-                                    it.weightInAlgorithmState.value = stateNow?.vertexToCost?.get(it.vertex).toString()
-                                }
-                            }
+                            onPreviousState()
                         }
                         "nextState" -> {
-                            if (stateIndex + 1u <= maxStateIndex) {
-                                stateIndex++
-                                ui?.graphUI?.verticesUI?.keys?.forEach {
-                                    it.weightInAlgorithmState.value = stateNow?.vertexToCost?.get(it.vertex).toString()
-                                }
-                            }
+                            onNextState()
                         }
                         else -> {
                             logger.info("[Tools] Can't response :(" +
@@ -110,8 +101,7 @@ class Tools(
                         }
                     }
                     SelectedTool.START_ALGORITHM -> {
-                        stateMachine = algorithm.dijkstraAlgorithm(graph = logic.graph, start = sender.vertex)
-                        ui?.graphUI?.verticesUI?.keys?.forEach { it.isAlgoStartedState.value = true}
+                        startAlgorithm(sender)
                     }
                     else -> {}
                 }
@@ -170,6 +160,76 @@ class Tools(
         } catch (exception: Exception) {
             logger.info(exception.message)
             false
+        }
+    }
+
+    private fun onPreviousState() {
+        if (stateIndex >= 1u) {
+            stateIndex--
+            val currentVertex = stateNow?.currentVertex
+            val vertexToCost = stateNow?.vertexToCost
+
+            ui?.graphUI?.verticesUI?.keys?.forEach {
+                if (it.colorState.value == VertexColor.WAS_LOOKED) {
+                    it.colorState.value = VertexColor.LOOKING
+                }
+
+                if (it.weightInAlgorithmState.value != (vertexToCost?.get(it.vertex) ?: -1)) {
+                    it.weightInAlgorithmState.value = stateNow?.vertexToCost?.get(it.vertex).toString()
+
+                    when (it.colorState.value) {
+                        VertexColor.FIXED, VertexColor.LOOKING -> {
+                            it.colorState.value = VertexColor.DEFAULT
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private fun onNextState() {
+        if (stateIndex + 1u <= maxStateIndex) {
+            stateIndex++
+            val currentVertex = stateNow?.currentVertex
+            val vertexToCost = stateNow?.vertexToCost
+
+            ui?.graphUI?.verticesUI?.keys?.forEach {
+                if (it.vertex == currentVertex) {
+                    it.colorState.value = VertexColor.FIXED
+                }
+
+                if (it.weightInAlgorithmState.value != (vertexToCost?.get(it.vertex) ?: -1)) {
+                    it.weightInAlgorithmState.value = vertexToCost?.get(it.vertex).toString()
+                    it.colorState.value = VertexColor.LOOKING
+                }
+                else {
+                    if (it.colorState.value != VertexColor.FIXED) {
+                        if (it.colorState.value == VertexColor.LOOKING) {
+                            it.colorState.value = VertexColor.WAS_LOOKED
+                        }
+                        else {
+                            it.colorState.value = VertexColor.DEFAULT
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private fun startAlgorithm(sender: VertexUI) {
+        stateMachine = algorithm.dijkstraAlgorithm(graph = logic.graph, start = sender.vertex)
+        ui?.graphUI?.verticesUI?.keys?.forEach { it.isAlgoStartedState.value = true}
+        val currentVertex = stateNow?.currentVertex
+        val vertexToCost = stateNow?.vertexToCost
+
+        ui?.graphUI?.verticesUI?.keys?.forEach {
+            if (it.vertex == currentVertex) {
+                it.colorState.value = VertexColor.FIXED
+            }
+
+            if (it.weightInAlgorithmState.value != (vertexToCost?.get(it.vertex) ?: -1)) {
+                it.weightInAlgorithmState.value = vertexToCost?.get(it.vertex).toString()
+            }
         }
     }
 

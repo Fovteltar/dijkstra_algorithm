@@ -26,10 +26,12 @@ class VertexUI(val vertex: Vertex = Vertex(), private val tools: Tools) {
     var topLeftOffset: Offset = Offset(0f, 0f)
     var isAlgoStartedState = mutableStateOf(false)
     var weightInAlgorithmState = mutableStateOf("")
+    var colorState = mutableStateOf(VertexColor.DEFAULT)
     @Composable
     fun draw() {
         var isAlgoStarted = remember { isAlgoStartedState }
         var weightInAlgorithm = remember { weightInAlgorithmState }
+        var color = remember { colorState }
         if (isAlgoStarted.value) {
             Text(
                 text = weightInAlgorithm.value,
@@ -51,7 +53,7 @@ class VertexUI(val vertex: Vertex = Vertex(), private val tools: Tools) {
                     tools.notifyMe(sender = this)
                 },
             shape = CircleShape,
-            color = Color.Blue,
+            color = color.value.color,
         ) {
             Text(
                 text = let {
