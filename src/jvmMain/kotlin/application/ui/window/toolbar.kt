@@ -276,7 +276,7 @@ class Toolbar(val tools: Tools) {
                 }
                 Button(
                     onClick = {
-    //                    TODO("NOT IMPLEMENTED YET")
+                        tools.notifyMe(Pair(getSuper(), "skip"))
                     },
                     modifier = Modifier
                         .weight(1f, true)

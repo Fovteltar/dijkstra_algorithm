@@ -34,15 +34,15 @@ class Tools(
 
     private val algorithm = Algorithm()
 
-    private lateinit var stateMachine: StateMachine
+    private var stateMachine: StateMachine? = null
     var stateIndex = 0u
-    val maxStateIndex: UInt
+    val maxStateIndex: UInt?
         get() {
-            return stateMachine.size.toUInt() - 1u
+            return stateMachine?.size?.toUInt()?.minus(1u)
         }
     val stateNow: State?
         get() {
-            return stateMachine.getState(stateIndex.toInt())
+            return stateMachine?.getState(stateIndex.toInt())
         }
 
     @OptIn(ExperimentalComposeUiApi::class)
@@ -71,6 +71,13 @@ class Tools(
                         }
                         "nextState" -> {
                             onNextState()
+                        }
+                        "skip" -> {
+                            if (stateMachine != null) {
+                                while (stateIndex != maxStateIndex) {
+                                    onNextState()
+                                }
+                            }
                         }
                         else -> {
                             logger.info("[Tools] Can't response :(" +
@@ -188,7 +195,7 @@ class Tools(
     }
 
     private fun onNextState() {
-        if (stateIndex + 1u <= maxStateIndex) {
+        if (stateIndex + 1u <= if (maxStateIndex != null) maxStateIndex!! else 0u) {
             stateIndex++
             val currentVertex = stateNow?.currentVertex
             val vertexToCost = stateNow?.vertexToCost
@@ -213,6 +220,7 @@ class Tools(
                     }
                 }
             }
+            logger.info("$stateNow")
         }
     }
 
