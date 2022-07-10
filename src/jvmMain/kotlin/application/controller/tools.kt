@@ -1,10 +1,12 @@
 package application.controller
 
+import GraphFileWriter
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.input.key.*
 import application.logic.Logic
+import application.logic.serialization.FileInfo
 import application.logic.serialization.State
 import application.ui.UI
 import application.ui.objects.EdgeUI
@@ -14,9 +16,7 @@ import application.ui.objects.VertexUI
 import application.ui.window.Canvas
 import application.ui.window.Toolbar
 import logger
-import logic.Algorithm
-import logic.StateMachine
-import logic.Vertex
+import logic.*
 
 enum class SelectedTool {
     NOTHING, ADD_VERTEX, REMOVE_VERTEX, ADD_EDGE, REMOVE_EDGE, START_ALGORITHM
@@ -35,14 +35,14 @@ class Tools(
     private val algorithm = Algorithm()
 
     private var stateMachine: StateMachine? = null
-    var stateIndex = 0u
+    var stateIndex: UInt? = null
     val maxStateIndex: UInt?
         get() {
             return stateMachine?.size?.toUInt()?.minus(1u)
         }
     val stateNow: State?
         get() {
-            return stateMachine?.getState(stateIndex.toInt())
+            return stateMachine?.getState(stateIndex!!.toInt())
         }
 
     @OptIn(ExperimentalComposeUiApi::class)
@@ -73,11 +73,13 @@ class Tools(
                             onNextState()
                         }
                         "skip" -> {
-                            if (stateMachine != null) {
-                                while (stateIndex != maxStateIndex) {
-                                    onNextState()
-                                }
-                            }
+                            onSkip()
+                        }
+                        "save" -> {
+                            onSave()
+                        }
+                        "load" -> {
+                            onLoad()
                         }
                         else -> {
                             logger.info("[Tools] Can't response :(" +
@@ -124,10 +126,10 @@ class Tools(
         }
     }
 
-    private fun addVertex(offset: Offset): Boolean {
+    private fun addVertex(offset: Offset, vertex: Vertex = Vertex()): Boolean {
         // center offset -> top-left offset
         val topLeftOffset = Offset(x = offset.x - VERTEX_SIZE / 2, y = offset.y - VERTEX_SIZE / 2)
-        val vertexUI = VertexUI(vertex = Vertex(), tools = this)
+        val vertexUI = VertexUI(vertex = vertex, tools = this)
         vertexUI.topLeftOffset = topLeftOffset
         ui!!.graphUI.addVertex(vertexUI)
         verticesAmount.value += 1
@@ -147,9 +149,19 @@ class Tools(
         }
     }
 
-    private fun addEdge(verticesUI: Pair<VertexUI, VertexUI>): Boolean {
+    private fun addEdge(verticesUI: Pair<VertexUI, VertexUI>, weight: UInt = 1u): Boolean {
         return try {
-            val edgeUI = EdgeUI(verticesUI = verticesUI, tools = this)
+            val edgeUI = EdgeUI(
+                verticesUI = verticesUI,
+                tools = this,
+                edge = Edge(
+                    Pair(
+                        first = verticesUI.first.vertex,
+                        second = verticesUI.second.vertex
+                    ),
+                    weight = weight.toInt()
+                )
+            )
             ui!!.graphUI.addEdge(edgeUI)
             edgesAmount.value += 1
             true
@@ -171,22 +183,24 @@ class Tools(
     }
 
     private fun onPreviousState() {
-        if (stateIndex >= 1u) {
-            stateIndex--
-            val currentVertex = stateNow?.currentVertex
-            val vertexToCost = stateNow?.vertexToCost
+        if (stateIndex != null) {
+            if (stateIndex!! >= 1u) {
+                stateIndex = stateIndex!! - 1u
+                val currentVertex = stateNow?.currentVertex
+                val vertexToCost = stateNow?.vertexToCost
 
-            ui?.graphUI?.verticesUI?.keys?.forEach {
-                if (it.colorState.value == VertexColor.WAS_LOOKED) {
-                    it.colorState.value = VertexColor.LOOKING
-                }
+                ui?.graphUI?.verticesUI?.keys?.forEach {
+                    if (it.colorState.value == VertexColor.WAS_LOOKED) {
+                        it.colorState.value = VertexColor.LOOKING
+                    }
 
-                if (it.weightInAlgorithmState.value != (vertexToCost?.get(it.vertex) ?: -1)) {
-                    it.weightInAlgorithmState.value = stateNow?.vertexToCost?.get(it.vertex).toString()
+                    if (it.weightInAlgorithmState.value != (vertexToCost?.get(it.vertex) ?: -1)) {
+                        it.weightInAlgorithmState.value = stateNow?.vertexToCost?.get(it.vertex).toString()
 
-                    when (it.colorState.value) {
-                        VertexColor.FIXED, VertexColor.LOOKING -> {
-                            it.colorState.value = VertexColor.DEFAULT
+                        when (it.colorState.value) {
+                            VertexColor.FIXED, VertexColor.LOOKING -> {
+                                it.colorState.value = VertexColor.DEFAULT
+                            }
                         }
                     }
                 }
@@ -195,37 +209,42 @@ class Tools(
     }
 
     private fun onNextState() {
-        if (stateIndex + 1u <= if (maxStateIndex != null) maxStateIndex!! else 0u) {
-            stateIndex++
-            val currentVertex = stateNow?.currentVertex
-            val vertexToCost = stateNow?.vertexToCost
+        if (stateIndex != null) {
+            if (stateIndex!! + 1u <= if (maxStateIndex != null) maxStateIndex!! else 0u) {
+                stateIndex = stateIndex!! + 1u
+                val currentVertex = stateNow?.currentVertex
+                val vertexToCost = stateNow?.vertexToCost
 
-            ui?.graphUI?.verticesUI?.keys?.forEach {
-                if (it.vertex == currentVertex) {
-                    it.colorState.value = VertexColor.FIXED
-                }
+                ui?.graphUI?.verticesUI?.keys?.forEach {
+                    if (it.vertex == currentVertex) {
+                        it.colorState.value = VertexColor.FIXED
+                    }
 
-                if (it.weightInAlgorithmState.value != (vertexToCost?.get(it.vertex) ?: -1)) {
-                    it.weightInAlgorithmState.value = vertexToCost?.get(it.vertex).toString()
-                    it.colorState.value = VertexColor.LOOKING
-                }
-                else {
-                    if (it.colorState.value != VertexColor.FIXED) {
-                        if (it.colorState.value == VertexColor.LOOKING) {
-                            it.colorState.value = VertexColor.WAS_LOOKED
-                        }
-                        else {
-                            it.colorState.value = VertexColor.DEFAULT
+                    if (it.weightInAlgorithmState.value != (vertexToCost?.get(it.vertex) ?: -1)) {
+                        it.weightInAlgorithmState.value = vertexToCost?.get(it.vertex).toString()
+                        it.colorState.value = VertexColor.LOOKING
+                    }
+                    else {
+                        if (it.colorState.value != VertexColor.FIXED) {
+                            if (it.colorState.value == VertexColor.LOOKING) {
+                                it.colorState.value = VertexColor.WAS_LOOKED
+                            }
+                            else {
+                                it.colorState.value = VertexColor.DEFAULT
+                            }
                         }
                     }
                 }
+                logger.info("$stateNow")
             }
-            logger.info("$stateNow")
+
         }
     }
 
     private fun startAlgorithm(sender: VertexUI) {
         stateMachine = algorithm.dijkstraAlgorithm(graph = logic.graph, start = sender.vertex)
+        stateIndex = 0u
+
         ui?.graphUI?.verticesUI?.keys?.forEach { it.isAlgoStartedState.value = true}
         val currentVertex = stateNow?.currentVertex
         val vertexToCost = stateNow?.vertexToCost
@@ -241,4 +260,55 @@ class Tools(
         }
     }
 
+    private fun onSkip() {
+        if (stateMachine != null) {
+            while (stateIndex != maxStateIndex) {
+                onNextState()
+            }
+        }
+    }
+
+    private fun onSave() {
+        val start = stateMachine?.getState(0)?.currentVertex
+        val gfw = GraphFileWriter("test.txt")
+
+        val coords =
+            ui?.graphUI?.verticesUI?.keys?.map { it.vertex to if (true) Pair(it.topLeftOffset.x, it.topLeftOffset.y) else null}?.toMap()?.toMutableMap()
+
+        gfw.toFile(
+            fileInfo = FileInfo(
+                graph = logic.graph,
+                start = start!!,
+                coords = coords,
+                stateNumber = stateIndex?.toInt()
+            )
+        )
+    }
+
+    private fun onLoad() {
+        val gfr = GraphFileReader("test.txt")
+        val fileInfo = gfr.graphFromFile()
+        if (fileInfo.coords != null && fileInfo.stateNumber != null) {
+            ui?.graphUI?.verticesUI?.keys?.forEach {
+                removeVertex(it)
+            }
+            lateinit var startUI: VertexUI
+            fileInfo.coords.forEach {
+                addVertex(vertex = it.key, offset = Offset(x = it.value!!.first, y = it.value!!.second))
+            }
+
+            fileInfo.graph.getEdges().forEach {
+                addEdge(
+                    Pair(
+                        first = ui!!.graphUI.vertexToUI[it.vertices.first]!!,
+                        second = ui!!.graphUI.vertexToUI[it.vertices.first]!!
+                    ),
+                    weight = it.weight.toUInt()
+                )
+            }
+
+            stateIndex = fileInfo.stateNumber.toUInt()
+            startAlgorithm(ui?.graphUI?.vertexToUI?.get(fileInfo.start)!!)
+        }
+    }
 }

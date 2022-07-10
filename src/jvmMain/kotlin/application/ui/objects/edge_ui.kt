@@ -26,8 +26,11 @@ import kotlin.math.sqrt
 
 const val LINE_WIDTH = 10f
 
-class EdgeUI(val verticesUI: Pair<VertexUI, VertexUI>, private val tools: Tools) {
-    val edge = Edge(Pair(verticesUI.first.vertex, verticesUI.second.vertex))
+class EdgeUI(
+    val verticesUI: Pair<VertexUI, VertexUI>,
+    private val tools: Tools,
+    val edge: Edge = Edge(Pair(verticesUI.first.vertex, verticesUI.second.vertex))
+) {
     val edgeDialog = EdgeDialog()
     @Composable
     fun draw() {
