@@ -1,5 +1,13 @@
 package application.ui.objects
 
+import androidx.compose.ui.graphics.Color
+
+enum class VertexColor(val color: Color) {
+    DEFAULT(Color.Blue),
+    FIXED(Color.Green),
+    WAS_LOOKED(Color.Blue),
+    LOOKING(Color.Yellow)
+}
 
 class VertexInfoUI {
     val outGoingEdges:MutableMap<VertexUI, EdgeUI> = mutableMapOf()
