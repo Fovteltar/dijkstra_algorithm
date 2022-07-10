@@ -72,7 +72,6 @@ class Canvas(val tools: Tools) {
                 }
                 .composed { modifier }
         ) {
-        logger.info("[CANVAS]: BOX WAS UPDATED!")
 
             if (verticesAmount.value > 0) {
                 for (vertexUI in tools.ui?.graphUI?.verticesUI!!.keys) {
@@ -85,6 +84,8 @@ class Canvas(val tools: Tools) {
                     edgeUI.draw()
                 }
             }
+            logger.info("verticesAmount: $verticesAmount" +
+                    "\nedgesAmount: $edgesAmount")
         }
     }
 }
