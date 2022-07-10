@@ -32,7 +32,7 @@ class Algorithm {
                     part_solution[it.vertices.second] = costs[it.vertices.second]!!
                 }
                 stateMachine.addNextState(part_solution, current.vertex)
-                queue.add(PriorityVertex(it.vertices.second, it.weight))
+                queue.add(PriorityVertex(it.vertices.second, it.weight + costs[it.vertices.second]!!))
             }
             closed.add(current.vertex)
         }

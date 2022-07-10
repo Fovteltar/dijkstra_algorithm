@@ -30,7 +30,8 @@ class StateMachine(graph: Graph, start: Vertex) {
     }
 
     fun getState(stateNumber:Int): State?{
-        if(stateNumber in 1 until size){
+        val stateNumber = if(stateNumber == 0) 1 else stateNumber
+        if(stateNumber in 0 until size){
             val state: MutableMap<Vertex, String> = mutableMapOf()
             states.keys.forEach {
                 state[it] = states[it]!![stateNumber]

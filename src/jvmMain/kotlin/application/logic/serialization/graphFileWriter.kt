@@ -29,7 +29,7 @@ class GraphFileWriter(fileName: String){
     private fun coordsToFile(coords:MutableMap<Vertex, Pair<Float, Float>?>?, filePrinter:PrintWriter){
         filePrinter.println(textKeyWords.getKeyWordString(KeyWords.COORDS) + textKeyWords.blockStart)
         coords!!.forEach { vertex, offsetPair ->
-            filePrinter.println("\t${vertex.vertexName} ${offsetPair?.first} ${offsetPair?.first}")
+            filePrinter.println("\t${vertex.vertexName} ${offsetPair?.first} ${offsetPair?.second}")
         }
         filePrinter.println(textKeyWords.blockEnd)
     }
