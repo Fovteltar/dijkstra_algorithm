@@ -7,3 +7,10 @@ graph{
     b d 2
 }
 start = a
+state = 3
+
+coords{
+    a(1,1)
+    b(2,2)
+
+}

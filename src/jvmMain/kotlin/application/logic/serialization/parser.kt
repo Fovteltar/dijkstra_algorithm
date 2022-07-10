@@ -4,7 +4,8 @@ import java.io.IOException
 
 
 class Parser{
-    private val keyWords:MutableMap<String, KeyWords> = TextKeyWords().keyWords
+    private val textKeyWords = TextKeyWords()
+    private val keyWords:MutableMap<String, KeyWords> = textKeyWords.keyWords
     private val keyWordsStartIndexes: MutableMap<KeyWords, Int> = mutableMapOf()
     private val keyWordsBlocksEnds: MutableMap<KeyWords, Int> = mutableMapOf()
     private var strings:MutableList<String> = mutableListOf()
@@ -70,7 +71,7 @@ class Parser{
             else break
         }
 
-        if(strings[currentIndexString] != TextKeyWords().blockEnd) throw IOException("Wrong graph block")
+        if(strings[currentIndexString] != textKeyWords.blockEnd) throw IOException("Wrong graph block")
         if(!startExistingFlag) throw  IOException("Start vertex not in graph")
         keyWordsBlocksEnds[KeyWords.GRAPH] = currentIndexString - 1
     }
@@ -97,7 +98,7 @@ class Parser{
             else break
         }
 
-        if(strings[currentIndexString] != TextKeyWords().blockEnd) throw IOException("Wrong graph block")
+        if(strings[currentIndexString] != textKeyWords.blockEnd) throw IOException("Wrong graph block")
         if(!startExistingFlag) throw  IOException("Start vertex not in coords")
         keyWordsBlocksEnds[KeyWords.COORDS] = currentIndexString - 1
     }

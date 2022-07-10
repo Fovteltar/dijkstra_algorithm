@@ -16,6 +16,7 @@ class Algorithm {
         while (!queue.isEmpty()) {
             val current = queue.poll()
             if (current.vertex in closed) continue
+            stateMachine.addNextState(mutableMapOf<Vertex, Int>(), current.vertex)
             val dests = graph.getDestinations(current.vertex)
             val part_solution: MutableMap<Vertex, Int> = mutableMapOf()
             dests?.forEach {
