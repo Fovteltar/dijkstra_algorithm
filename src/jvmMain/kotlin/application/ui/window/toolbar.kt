@@ -55,7 +55,7 @@ class Toolbar(val tools: Tools) {
             Row(modifier = Modifier.weight(columnProportion["file"]!!, true)) {
                 Button(
                     onClick = {
-    //                TODO("NOT IMPLEMENTED YET")
+                        tools.notifyMe(Pair(getSuper(), "load"))
                     },
                     modifier = Modifier
                         .weight(1f, true)
@@ -77,7 +77,7 @@ class Toolbar(val tools: Tools) {
                 )
                 Button(
                     onClick = {
-    //                TODO("NOT IMPLEMENTED YET")
+                        tools.notifyMe(Pair(getSuper(), "save"))
                     },
                     modifier = Modifier
                         .weight(1f, true)
@@ -276,7 +276,7 @@ class Toolbar(val tools: Tools) {
                 }
                 Button(
                     onClick = {
-    //                    TODO("NOT IMPLEMENTED YET")
+                        tools.notifyMe(Pair(getSuper(), "skip"))
                     },
                     modifier = Modifier
                         .weight(1f, true)

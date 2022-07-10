@@ -22,8 +22,7 @@ import logic.Vertex
 
 const val VERTEX_SIZE = 100
 
-class VertexUI(val vertex: Vertex = Vertex(), private val tools: Tools) {
-    var topLeftOffset: Offset = Offset(0f, 0f)
+class VertexUI(val vertex: Vertex = Vertex(), var topLeftOffset: Offset = Offset(0f, 0f), private val tools: Tools) {
     var isAlgoStartedState = mutableStateOf(false)
     var weightInAlgorithmState = mutableStateOf("")
     var colorState = mutableStateOf(VertexColor.DEFAULT)

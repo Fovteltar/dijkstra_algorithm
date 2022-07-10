@@ -1,14 +1,17 @@
 package application.ui.objects
 
 import logic.Graph
+import logic.Vertex
 
 
 class GraphUI(private val graph: Graph) {
     val verticesUI: MutableMap<VertexUI, VertexInfoUI> = mutableMapOf()
+    val vertexToUI = mutableMapOf<Vertex, VertexUI>()
 
     fun addVertex(vertexUI: VertexUI) {
         graph.addVertex(vertexUI.vertex)
         verticesUI[vertexUI] = VertexInfoUI()  ////
+        vertexToUI[vertexUI.vertex] = vertexUI
     }
     fun addEdge(edgeUI: EdgeUI) {
         graph.addEdge(edgeUI.edge)
@@ -38,6 +41,7 @@ class GraphUI(private val graph: Graph) {
         if (verticesUI.containsKey(vertexUI)) {
             val removedEdgesAmount = removeUIEdgesTo(vertexUI)
             verticesUI.remove(vertexUI)
+            vertexToUI.remove(vertexUI.vertex)
             return removedEdgesAmount
         }
         return 0u
