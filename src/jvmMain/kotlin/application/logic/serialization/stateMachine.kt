@@ -20,9 +20,6 @@ class StateMachine(graph: Graph, start: Vertex) {
         currentStateVertexes.add(start)
     }
 
-
-
-
     fun addNextState(currentState: MutableMap<Vertex, Int>, currentStateVertex: Vertex) {
         ++size
         currentStateVertexes.add(currentStateVertex)
@@ -33,6 +30,7 @@ class StateMachine(graph: Graph, start: Vertex) {
     }
 
     fun getState(stateNumber:Int): State?{
+        val stateNumber = if(stateNumber == 0) 1 else stateNumber
         if(stateNumber in 0 until size){
             val state: MutableMap<Vertex, String> = mutableMapOf()
             states.keys.forEach {
