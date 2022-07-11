@@ -136,11 +136,16 @@ class Tools(
         }
     }
 
-    private fun addVertex(offset: Offset, vertex: Vertex = Vertex()): Boolean {
+    private fun addVertex(offset: Offset, vertex: Vertex = Vertex(), needToMove: Boolean = true): Boolean {
         // center offset -> top-left offset
         val topLeftOffset = Offset(x = offset.x - VERTEX_SIZE / 2, y = offset.y - VERTEX_SIZE / 2)
         val vertexUI = VertexUI(vertex = vertex, tools = this)
-        vertexUI.topLeftOffset = topLeftOffset
+        if (needToMove) {
+            vertexUI.topLeftOffset = topLeftOffset
+        }
+        else {
+            vertexUI.topLeftOffset = offset
+        }
         ui!!.graphUI.addVertex(vertexUI)
         verticesAmount.value += 1
 //        logger.info("[Tools] Vertex was added with offset: $offset")
@@ -346,6 +351,9 @@ class Tools(
         try {
             val gfr = GraphFileReader("test.txt")
             val fileInfo = gfr.getFileInformation()
+
+            algoReset()
+
             ui?.graphUI?.verticesUI?.keys?.forEach {
                 removeVertex(it)
             }
@@ -354,7 +362,7 @@ class Tools(
 
             fileInfo.coords.forEach {
                 println("${it.key}")
-                addVertex(vertex = it.key, offset = Offset(x = it.value.first, y = it.value.second))
+                addVertex(vertex = it.key, offset = Offset(x = it.value.first, y = it.value.second), needToMove = false)
             }
 
             fileInfo.graph.getEdges().forEach {
@@ -387,6 +395,6 @@ class Tools(
             it.colorState.value = VertexColor.DEFAULT
         }
         stateMachine = null
-        stateIndex = 0u
+        stateIndex = null
     }
 }

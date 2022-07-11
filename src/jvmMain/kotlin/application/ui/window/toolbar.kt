@@ -61,6 +61,9 @@ class Toolbar(val tools: Tools) {
             Row(modifier = Modifier.weight(columnProportion["file"]!!, true)) {
                 Button(
                     onClick = {
+                        if (isAlgoStarted.value) {
+                            isAlgoStarted.value = false
+                        }
                         tools.notifyMe(Pair(getSuper(), "load"))
                     },
                     modifier = Modifier
