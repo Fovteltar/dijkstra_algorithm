@@ -23,9 +23,6 @@ class Parser{
                     }
                 }
         }
-        if(!keyWordsStartIndexes.containsKey(KeyWords.START)){
-            throw IOException("Start is not specified")
-        }
         if(!keyWordsStartIndexes.containsKey(KeyWords.GRAPH)){
             throw IOException("Graph is not specified")
         }
@@ -36,12 +33,15 @@ class Parser{
     }
 
 
-    fun getStartVertexName():String{
-        val startValue = strings[keyWordsStartIndexes[KeyWords.START]!!].
-        filter { !it.isWhitespace() }.substringAfter("=")
-        return if (startValue != "="){
-            return startValue
-        }else throw IOException("Start is not specified correctly")
+    fun getStartVertexName():String?{
+        if(keyWordsStartIndexes.containsKey(KeyWords.START)) {
+            val startValue =
+                strings[keyWordsStartIndexes[KeyWords.START]!!].filter { !it.isWhitespace() }.substringAfter("=")
+            if (startValue != "=") {
+                return startValue
+            }
+        }
+        return null
     }
 
     fun getStateNumber():Int?{
@@ -56,14 +56,14 @@ class Parser{
 
     private fun checkValidGraph(){
         var currentIndexString:Int = keyWordsStartIndexes[KeyWords.GRAPH] !!+ 1
-        val start = getStartVertexName()
+//        val start = getStartVertexName()
         var startExistingFlag = false
 
         while (true){
             val splitString = strings[currentIndexString].split(" ").filter { s: String -> s.isNotBlank() }
             if (splitString.size == 3) {
                 var (source, destination, weight) = splitString
-                if (!startExistingFlag && (source == start || destination == start)) startExistingFlag = true
+//                if (!startExistingFlag && (source == start || destination == start)) startExistingFlag = true
                 if (weight.toIntOrNull() == null || weight.toInt() < 0)
                     throw IOException("Invalid edge weight\n${currentIndexString+2}: ${strings[currentIndexString]}")
                 ++currentIndexString
@@ -72,7 +72,7 @@ class Parser{
         }
 
         if(strings[currentIndexString] != textKeyWords.blockEnd) throw IOException("Wrong graph block")
-        if(!startExistingFlag) throw  IOException("Start vertex not in graph")
+//        if(!startExistingFlag) throw  IOException("Start vertex not in graph")
         keyWordsBlocksEnds[KeyWords.GRAPH] = currentIndexString - 1
     }
 
@@ -80,7 +80,6 @@ class Parser{
         if (!keyWordsStartIndexes.containsKey(KeyWords.COORDS)) return
         var currentIndexString:Int = keyWordsStartIndexes[KeyWords.COORDS] !!+ 1
         val start = getStartVertexName()
-        var startExistingFlag = false
 
         while (true){
             val splitString = strings[currentIndexString].split('(', ')', ',', ' ').
@@ -88,7 +87,7 @@ class Parser{
 
             if (splitString.size == 3) {
                 var (vertex, offsetX, offsetY) = splitString
-                if (!startExistingFlag && vertex == start ) startExistingFlag = true
+//                if (!startExistingFlag && vertex == start ) startExistingFlag = true
                 if (offsetX.toFloatOrNull() == null || offsetX.toFloat() < 0)
                     throw IOException("Invalid Xoffset\n${currentIndexString + 1}: ${strings[currentIndexString]}")
                 if (offsetY.toFloatOrNull() == null || offsetY.toFloat() < 0)
@@ -99,18 +98,18 @@ class Parser{
         }
 
         if(strings[currentIndexString] != textKeyWords.blockEnd) throw IOException("Wrong graph block")
-        if(!startExistingFlag) throw  IOException("Start vertex not in coords")
+//        if(!startExistingFlag) throw  IOException("Start vertex not in coords")
         keyWordsBlocksEnds[KeyWords.COORDS] = currentIndexString - 1
     }
 
     fun checkValidBlocks(){
         val graphRange = keyWordsStartIndexes[KeyWords.GRAPH]!!.rangeTo(keyWordsBlocksEnds[KeyWords.GRAPH]!!)
         //Start key check
-        if (keyWordsStartIndexes[KeyWords.START]!! in graphRange)throw IOException("Input error")
+        if (keyWordsStartIndexes.containsKey(KeyWords.START) && keyWordsStartIndexes[KeyWords.START]!! in graphRange)throw IOException("Input error")
 
         val coordsRange = keyWordsBlocksEnds[KeyWords.COORDS]?.let { keyWordsStartIndexes[KeyWords.COORDS]?.rangeTo(it) }
         if (coordsRange != null){
-            if (keyWordsStartIndexes[KeyWords.START]!! in coordsRange)throw IOException("Input error")
+            if (keyWordsStartIndexes.containsKey(KeyWords.START) && keyWordsStartIndexes[KeyWords.START] in coordsRange)throw IOException("Input error")
         }
         //StateNumber key check
         if(keyWordsStartIndexes.containsKey(KeyWords.STATE_NUMBER)){
