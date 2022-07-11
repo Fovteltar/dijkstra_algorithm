@@ -27,14 +27,19 @@ class GraphFileReader(fileName: String) {
     @Throws(IOException::class)
     fun getFileInformation(): FileInfo {
         parser.parse(getFileStrings())
-        val start = if (parser.getStartVertexName() == null) null else Vertex(parser.getStartVertexName()!!)
         val graph = Graph()
-        if (start != null) graph.addVertex(start)
-        val coordinatesInformation = parser.getCoordsInformation()
-        if (coordinatesInformation == null) throw IOException("Coordinates not set")
-        val coords: MutableMap<Vertex, Pair<Float, Float>> = mutableMapOf()
         val vertexNameConformity: MutableMap<String, Vertex> = mutableMapOf()
-        if (start != null) vertexNameConformity[start.vertexName] = start
+        val coords: MutableMap<Vertex, Pair<Float, Float>> = mutableMapOf()
+        val coordinatesInformation = parser.getCoordsInformation()
+        coordinatesInformation.forEach { nameVertex, coordInf ->
+            val currentVertex = Vertex(nameVertex)
+            graph.addVertex(currentVertex)
+            vertexNameConformity[nameVertex] = currentVertex
+            coords[currentVertex] = Pair(coordInf.first, coordInf.second)
+        }
+
+        val startName = parser.getStartVertexName()
+        val start = if(startName == null) null else vertexNameConformity[startName]
 
         val edges: HashSet<Pair<String, String>> = hashSetOf()
         for ((source, destination, weight) in parser.getGraphInformation()) {
@@ -59,17 +64,14 @@ class GraphFileReader(fileName: String) {
             // Проверка добавления координат
 
             if (!coords.containsKey(vertexNameConformity[source])) {
-                if (coordinatesInformation.containsKey(source)) {
-                    coords[vertexNameConformity[source]!!] = coordinatesInformation[source]!!
-                } else throw IOException("Vertex with \"$source\" name don't have coordinates")
+                throw IOException("Vertex with \"$source\" name don't have coordinates")
             }
             if (!coords.containsKey(vertexNameConformity[destination])) {
-                if (coordinatesInformation.containsKey(destination)) {
-                    coords[vertexNameConformity[destination]!!] = coordinatesInformation[destination]!!
-                } else throw IOException("Vertex with \"$destination\" name don't have coordinates")
+                throw IOException("Vertex with \"$destination\" name don't have coordinates")
             }
 
         }
+
         return FileInfo(graph, start, coords, parser.getStateNumber())
     }
 }

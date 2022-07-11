@@ -1,4 +1,5 @@
 import application.Application
+import logic.GraphFileReader
 import mu.KotlinLogging
 import org.apache.log4j.BasicConfigurator
 import org.apache.log4j.ConsoleAppender
