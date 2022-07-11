@@ -8,8 +8,8 @@ class Graph(
     fun addVertex(vertex: Vertex) {
         vertices[vertex] = VertexInfo()  //init
     }
-    fun addEdge(edge: Edge) {
-        if(vertices.containsKey(edge.vertices.first) && vertices.containsKey(edge.vertices.second)){
+    fun addEdge(edge: Edge){
+        if(vertices.containsKey(edge.vertices.first) && vertices.containsKey(edge.vertices.second) && edge.weight >= 0){
             vertices[edge.vertices.first]!!.addOutGoingEdge(edge.vertices.second, edge)
             vertices[edge.vertices.second]!!.addInputEdge(edge.vertices.first, edge)
         }

@@ -129,8 +129,8 @@ class Parser{
         return graphInformation
     }
 
-    fun getCoordsInformation():MutableMap<String, Pair<Float, Float>>?{
-        if(!keyWordsStartIndexes.containsKey(KeyWords.COORDS)) return null
+    fun getCoordsInformation():MutableMap<String, Pair<Float, Float>>{
+        if(!keyWordsStartIndexes.containsKey(KeyWords.COORDS)) return throw IOException("Coords not set")
         val coordsInformation:MutableMap<String, Pair<Float, Float>> = mutableMapOf()
         for (i in (keyWordsStartIndexes[KeyWords.COORDS]!!+1).rangeTo(keyWordsBlocksEnds[KeyWords.COORDS]!!)){
             val (vertex, xOffset, yOffset) = strings[i].split(' ', '(', ')', ',').filter { s: String ->  s.isNotBlank()}
