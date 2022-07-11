@@ -19,15 +19,18 @@ class Algorithm {
             if (current.vertex in closed) continue
             stateMachine.addNextState(null, current.vertex)
             val dests = graph.getDestinations(current.vertex)
-            dests?.forEach {
-                val new_cost = costs[current.vertex]!! + it.weight
-                if (it.vertices.second in costs) {
-                    costs[it.vertices.second] = min(costs[it.vertices.second]!!, new_cost)
-                } else {
-                    costs[it.vertices.second] = new_cost
+            if(dests != null) {
+                for (it in dests) {
+                    if (it.vertices.second in closed) continue
+                    val new_cost = costs[current.vertex]!! + it.weight
+                    if (it.vertices.second in costs) {
+                        costs[it.vertices.second] = min(costs[it.vertices.second]!!, new_cost)
+                    } else {
+                        costs[it.vertices.second] = new_cost
+                    }
+                    stateMachine.addNextState(Pair(it.vertices.second, costs[it.vertices.second]!!), current.vertex)
+                    queue.add(PriorityVertex(it.vertices.second, it.weight + costs[it.vertices.second]!!))
                 }
-                stateMachine.addNextState(Pair(it.vertices.second, costs[it.vertices.second]!!), current.vertex)
-                queue.add(PriorityVertex(it.vertices.second, it.weight + costs[it.vertices.second]!!))
             }
             closed.add(current.vertex)
         }
