@@ -7,12 +7,9 @@ import java.io.File
 import java.io.IOException
 import java.io.PrintWriter
 
-class GraphFileWriter(fileName: String){
-    var fileName = String()
-    val textKeyWords:TextKeyWords = TextKeyWords()
-    init{
-        this.fileName = fileName
-    }
+class GraphFileWriter(private val fileName: String){
+    private val textKeyWords:TextKeyWords = TextKeyWords()
+
 
     private fun edgesToFile(edges: MutableSet<Edge>, filePrinter:PrintWriter){
         filePrinter.println(textKeyWords.getKeyWordString(KeyWords.GRAPH) + textKeyWords.blockStart)
