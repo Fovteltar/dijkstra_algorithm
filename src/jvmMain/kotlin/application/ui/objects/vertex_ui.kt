@@ -23,26 +23,22 @@ import logic.Vertex
 const val VERTEX_SIZE = 100
 
 class VertexUI(val vertex: Vertex = Vertex(), var topLeftOffset: Offset = Offset(0f, 0f), private val tools: Tools) {
-    var isAlgoStartedState = mutableStateOf(false)
     var weightInAlgorithmState = mutableStateOf("")
     var colorState = mutableStateOf(VertexColor.DEFAULT)
     @Composable
     fun draw() {
-        var isAlgoStarted = remember { isAlgoStartedState }
         var weightInAlgorithm = remember { weightInAlgorithmState }
         var color = remember { colorState }
-        if (isAlgoStarted.value) {
-            Text(
-                text = weightInAlgorithm.value,
-                color = Color.Black,
-                fontSize = 26.sp,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .fillMaxHeight()
-                    .offset(x = (topLeftOffset.x + VERTEX_SIZE / 4).dp, y = (topLeftOffset.y - 3 * VERTEX_SIZE / 4).dp)
-                    .size((VERTEX_SIZE / 2).dp, (VERTEX_SIZE / 2).dp)
-            )
-        }
+        Text(
+            text = weightInAlgorithm.value,
+            color = Color.Black,
+            fontSize = 26.sp,
+            modifier = Modifier
+                .fillMaxWidth()
+                .fillMaxHeight()
+                .offset(x = (topLeftOffset.x + VERTEX_SIZE / 4).dp, y = (topLeftOffset.y - 3 * VERTEX_SIZE / 4).dp)
+                .size((VERTEX_SIZE / 2).dp, (VERTEX_SIZE / 2).dp)
+        )
         Surface(
             modifier = Modifier
                 .offset(x = topLeftOffset.x.dp, y = topLeftOffset.y.dp)

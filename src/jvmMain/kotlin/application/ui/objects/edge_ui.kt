@@ -69,14 +69,13 @@ class EdgeUI(
                 )
             }
 
-            logger.info("[EdgeUI] gradient: $gradient")
+            logger.info("gradient: $gradient")
 
             dislocation
         } else Offset(0f, VERTEX_SIZE / 2f)
 
         logger.info(
             """
-                [EdgeUI]:
                 size: ${size.x} ${size.y}
                 dislocation: ${dislocation.x} ${dislocation.y}
             """.trimIndent()
