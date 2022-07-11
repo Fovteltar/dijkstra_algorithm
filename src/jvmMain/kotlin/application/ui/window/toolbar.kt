@@ -30,6 +30,7 @@ class Toolbar(val tools: Tools) {
 
     @Composable
     fun draw(modifier: Modifier) {
+        val isAlgoStarted = remember { tools.isAlgoStarted }
         val selectedButton = remember { selectedButtonState }
         val columnColor = Color.Gray
         val columnProportion = mapOf(
@@ -41,6 +42,11 @@ class Toolbar(val tools: Tools) {
             "algoButtons" to 1f,
             "arrow" to 1f,
         )
+
+        if (isAlgoStarted.value) {
+            selectedButton.value = SelectedTool.NOTHING
+        }
+
         // percent
         val buttonRoundedCorner = 25
         Column(
@@ -55,6 +61,9 @@ class Toolbar(val tools: Tools) {
             Row(modifier = Modifier.weight(columnProportion["file"]!!, true)) {
                 Button(
                     onClick = {
+                        if (isAlgoStarted.value) {
+                            isAlgoStarted.value = false
+                        }
                         tools.notifyMe(Pair(getSuper(), "load"))
                     },
                     modifier = Modifier
@@ -107,7 +116,9 @@ class Toolbar(val tools: Tools) {
             )
             Button(
                 onClick = {
-                    selectedButton.value = SelectedTool.ADD_VERTEX
+                    if (!isAlgoStarted.value) {
+                        selectedButton.value = SelectedTool.ADD_VERTEX
+                    }
                 },
                 modifier = Modifier
                     .weight(columnProportion["graph"]!!, true)
@@ -131,7 +142,9 @@ class Toolbar(val tools: Tools) {
             )
             Button(
                 onClick = {
-                    selectedButton.value = SelectedTool.REMOVE_VERTEX
+                    if (!isAlgoStarted.value) {
+                        selectedButton.value = SelectedTool.REMOVE_VERTEX
+                    }
                 },
                 modifier = Modifier
                     .weight(columnProportion["graph"]!!, true)
@@ -155,7 +168,9 @@ class Toolbar(val tools: Tools) {
             )
             Button(
                 onClick = {
-                    selectedButton.value = SelectedTool.ADD_EDGE
+                    if (!isAlgoStarted.value) {
+                        selectedButton.value = SelectedTool.ADD_EDGE
+                    }
                 },
                 modifier = Modifier
                     .weight(columnProportion["graph"]!!, true)
@@ -179,7 +194,9 @@ class Toolbar(val tools: Tools) {
             )
             Button(
                 onClick = {
-                    selectedButton.value = SelectedTool.REMOVE_EDGE
+                    if (!isAlgoStarted.value) {
+                        selectedButton.value = SelectedTool.REMOVE_EDGE
+                    }
                 },
                 modifier = Modifier
                     .weight(columnProportion["graph"]!!, true)
@@ -215,18 +232,19 @@ class Toolbar(val tools: Tools) {
             )
             Button(
                 onClick = {
-                    selectedButton.value = SelectedTool.START_ALGORITHM
+                    isAlgoStarted.value = !isAlgoStarted.value
+                    tools.notifyMe(Pair(getSuper(), "changedAlgoState"))
                 },
                 modifier = Modifier
                     .weight(columnProportion["start"]!!, true)
                     .fillMaxWidth(),
                 shape = RoundedCornerShape(buttonRoundedCorner),
                 colors = ButtonDefaults.textButtonColors(
-                    backgroundColor = if (selectedButton.value == SelectedTool.START_ALGORITHM) Color.Red else Color.Black
+                    backgroundColor = if (isAlgoStarted.value) Color.Yellow else Color.Black
                 )
             ) {
                 Text(
-                    text = "START",
+                    text = if (isAlgoStarted.value) "END" else "START",
                     color = Color.White,
                     fontSize = 18.sp
                 )
