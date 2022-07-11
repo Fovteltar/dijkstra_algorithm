@@ -37,22 +37,6 @@ class StateMachine(graph: Graph, start: Vertex) {
             }
             else -> {AlgorithmUpdate(null, null)}
         }
-//        if(index == 1) return AlgorithmUpdate(Pair(null, currentStateVertexes[1]), null)
-//        if(index in 2 until size) {
-//            val prevState = getState(index)
-//            val currentVertexChange =
-//                if(currentStateVertexes[index] == currentStateVertexes[index+1])
-//                    null
-//                else
-//                    Pair(currentStateVertexes[index], currentStateVertexes[index+1])
-//            val markVertexChange =
-//                if(prevState != null && updates[index+1]?.first != null && updates[index+1]?.second != null)
-//                    Pair(updates[index+1]!!.first, Pair(prevState[updates[index+1]?.first]!!.toInt(), updates[index+1]!!.second))
-//                else null
-//
-//            return AlgorithmUpdate(currentVertexChange, markVertexChange)
-//        }
-//        return AlgorithmUpdate(null, null)
     }
     fun addNextState(currentUpdate: Pair<Vertex, Int>?, currentStateVertex: Vertex) {
         currentStateVertexes.add(currentStateVertex)
@@ -67,7 +51,7 @@ class StateMachine(graph: Graph, start: Vertex) {
         ++size
     }
 
-    fun getState(stateNumber:Int):MutableMap<Vertex, Float>?{
+    private fun getState(stateNumber:Int):MutableMap<Vertex, Float>?{
         if(stateNumber in 0 until size){
             val state: MutableMap<Vertex, Float> = mutableMapOf()
             states.keys.forEach {
