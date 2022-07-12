@@ -15,6 +15,10 @@ import application.ui.objects.VertexColor
 import application.ui.objects.VertexUI
 import application.ui.window.Canvas
 import application.ui.window.Toolbar
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import logger
 import logic.*
 
@@ -30,6 +34,8 @@ class Tools(
     val verticesAmount = mutableStateOf(0)
     val edgesAmount = mutableStateOf(0)
     val isAlgoStarted = mutableStateOf(false)
+    val isPlayingNow = mutableStateOf(false)
+    var isPlayingFinished = true
 
     private var vertexSelected = Pair<Boolean, VertexUI?>(false, null)
 
@@ -37,6 +43,7 @@ class Tools(
 
     private var stateMachine: StateMachine? = null
     private var stateIndex: UInt? = null
+
     private val maxStateIndex: UInt?
         get() {
             return stateMachine?.size?.toUInt()?.minus(1u)
@@ -83,10 +90,11 @@ class Tools(
                         "load" -> {
                             onLoad()
                         }
-                        "changedAlgoState" -> {
-                            if (!isAlgoStarted.value) {
-                                algoReset()
-                            }
+                        "play" -> {
+                            onPlay()
+                        }
+                        "changeAlgoState" -> {
+                            onChangeAlgoState()
                         }
                         else -> {
                             logger.info("Can't response :(" +
@@ -164,7 +172,7 @@ class Tools(
         }
     }
 
-    private fun addEdge(verticesUI: Pair<VertexUI, VertexUI>, weight: UInt = 1u): Boolean {
+    private fun addEdge(verticesUI: Pair<VertexUI, VertexUI>, weight: UInt = 1u, isDialogOpenOnCreate: Boolean = true): Boolean {
         return try {
             val edgeUI = EdgeUI(
                 verticesUI = verticesUI,
@@ -175,7 +183,8 @@ class Tools(
                         second = verticesUI.second.vertex
                     ),
                     weight = weight.toInt()
-                )
+                ),
+                isDialogOpenOnCreate = isDialogOpenOnCreate
             )
             ui!!.graphUI.addEdge(edgeUI)
             edgesAmount.value += 1
@@ -307,6 +316,11 @@ class Tools(
     }
 
     private fun startAlgorithm(sender: VertexUI) {
+        dropVerticesWeight()
+
+        if (!isAlgoStarted.value) {
+            isAlgoStarted.value = true
+        }
         stateMachine = algorithm.dijkstraAlgorithm(graph = logic.graph, start = sender.vertex)
         stateIndex = 0u
 
@@ -317,11 +331,7 @@ class Tools(
     }
 
     private fun onSkip() {
-        if (stateMachine != null) {
-            while (stateIndex != maxStateIndex) {
-                onNextState()
-            }
-        }
+        loadToStep(maxStateIndex!!)
     }
 
     private fun onSave() {
@@ -347,54 +357,118 @@ class Tools(
     }
 
     private fun onLoad() {
-        logger.info("Trying to read the file \"test.txt\"")
-        try {
-            val gfr = GraphFileReader("test.txt")
-            val fileInfo = gfr.getFileInformation()
+        if (!isPlayingNow.value && isPlayingFinished) {
+            logger.info("Trying to read the file \"test.txt\"")
+            try {
+                val gfr = GraphFileReader("test.txt")
+                val fileInfo = gfr.getFileInformation()
 
-            algoReset()
+                algoReset()
 
-            ui?.graphUI?.verticesUI?.keys?.forEach {
-                removeVertex(it)
+                while(ui?.graphUI?.verticesUI?.size!! > 0) {
+                    val vertexUI = ui?.graphUI?.verticesUI!!.keys.elementAt(0)
+                    removeVertex(vertexUI)
+                }
+
+                println("fileInfo: $fileInfo")
+
+                fileInfo.coords.forEach {
+                    println("${it.key}")
+                    addVertex(vertex = it.key, offset = Offset(x = it.value.first, y = it.value.second), needToMove = false)
+                }
+
+                fileInfo.graph.getEdges().forEach {
+                    addEdge(
+                        Pair(
+                            first = ui!!.graphUI.vertexToUI[it.vertices.first]!!,
+                            second = ui!!.graphUI.vertexToUI[it.vertices.second]!!
+                        ),
+                        weight = it.weight.toUInt(),
+                        isDialogOpenOnCreate = false
+                    )
+                }
+
+                val stateIndex = fileInfo.stateNumber?.toUInt()
+                if (stateIndex != null) {
+                    startAlgorithm(ui?.graphUI?.vertexToUI?.get(fileInfo.start)!!)
+                    loadToStep(stateIndex!!)
+                }
+                logger.info("Successful read file \"test.txt\"")
             }
-
-            println("fileInfo: $fileInfo")
-
-            fileInfo.coords.forEach {
-                println("${it.key}")
-                addVertex(vertex = it.key, offset = Offset(x = it.value.first, y = it.value.second), needToMove = false)
+            catch(exc: Exception) {
+                logger.error(exc) {
+                    "Broken file: ${exc.message}"
+                }
             }
-
-            fileInfo.graph.getEdges().forEach {
-                addEdge(
-                    Pair(
-                        first = ui!!.graphUI.vertexToUI[it.vertices.first]!!,
-                        second = ui!!.graphUI.vertexToUI[it.vertices.first]!!
-                    ),
-                    weight = it.weight.toUInt()
-                )
-            }
-
-            stateIndex = fileInfo.stateNumber?.toUInt()
-            if (stateIndex != null) {
-                startAlgorithm(ui?.graphUI?.vertexToUI?.get(fileInfo.start)!!)
-            }
-            logger.info("Successful read file \"test.txt\"")
         }
-        catch(exc: Exception) {
-            logger.error(exc) {
-                "Broken file: ${exc.message}"
-            }
+        else {
+            logger.info("I'm still playing...")
         }
 
     }
 
+    private fun onPlay(playDelaySec: UInt = 5u) {
+        logger.info("Playing started!")
+        if (isPlayingNow.value) {
+            isPlayingNow.value = false
+        }
+        else {
+            isPlayingNow.value = true
+            val delay = (playDelaySec * 1000u).toLong()
+
+            if(isPlayingFinished) {
+                GlobalScope.launch {
+                    isPlayingFinished = false
+                    while(stateIndex != null && stateIndex != maxStateIndex!!) {
+                        if (isPlayingNow.value) {
+                            onNextState()
+                            delay(delay)
+                        }
+                        else {
+                            isPlayingFinished = true
+                            isPlayingNow.value = false
+                            this.cancel()
+                        }
+                    }
+                    if (stateIndex!! == maxStateIndex!!) {
+                        isPlayingNow.value = false
+                    }
+                    isPlayingFinished = true
+                    isPlayingNow.value = false
+                }
+            }
+        }
+    }
+
     private fun algoReset() {
+        dropVerticesWeight()
+        stateMachine = null
+        stateIndex = null
+
+        vertexSelected = Pair(false, null)
+        outdatedLookingVertex = null
+
+        isPlayingNow.value = false
+        isPlayingFinished = true
+    }
+
+    private fun dropVerticesWeight() {
         ui?.graphUI?.verticesUI?.keys?.forEach {
             it.weightInAlgorithmState.value = ""
             it.colorState.value = VertexColor.DEFAULT
         }
-        stateMachine = null
-        stateIndex = null
+    }
+
+    private fun loadToStep(step: UInt) {
+        while (stateIndex!! != step && stateIndex!! <= maxStateIndex!!) {
+            onNextState()
+        }
+    }
+
+    private fun onChangeAlgoState() {
+        isAlgoStarted.value = !isAlgoStarted.value
+        if (!isAlgoStarted.value) {
+            algoReset()
+        }
     }
 }

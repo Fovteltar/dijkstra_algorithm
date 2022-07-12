@@ -29,7 +29,8 @@ const val LINE_WIDTH = 10f
 class EdgeUI(
     val verticesUI: Pair<VertexUI, VertexUI>,
     private val tools: Tools,
-    val edge: Edge = Edge(Pair(verticesUI.first.vertex, verticesUI.second.vertex))
+    val edge: Edge = Edge(Pair(verticesUI.first.vertex, verticesUI.second.vertex)),
+    val isDialogOpenOnCreate: Boolean = true
 ) {
     val edgeDialog = EdgeDialog()
     @Composable
@@ -161,7 +162,7 @@ class EdgeUI(
         }
 
         val switcher = remember { mutableStateOf(false) }
-        val isDialogOpen = remember { mutableStateOf(true) }
+        val isDialogOpen = remember { mutableStateOf(isDialogOpenOnCreate) }
         logger.debug("START: $start, END: $end, CENTER: $centerEdgeOffset")
 
         logger.debug("edgeDialog.text: ${edgeDialog.textState.value}")
@@ -172,7 +173,9 @@ class EdgeUI(
             modifier = Modifier
                 .offset(x = centerEdgeOffset.x.dp, y = centerEdgeOffset.y.dp)
                 .clickable {
-                    isDialogOpen.value = true
+                    if (!tools.isAlgoStarted.value) {
+                        isDialogOpen.value = true
+                    }
                 }
                 .size(36.dp, 24.dp)
         )
