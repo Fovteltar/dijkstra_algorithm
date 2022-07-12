@@ -25,8 +25,8 @@ class UI(private val tools: Tools) {
         )
     val graphUI = GraphUI(tools.logic.graph)
     val toolbar = Toolbar(tools)
-    private val canvas = Canvas(tools)
-    private val footer = Footer(tools)
+    val canvas = Canvas(tools)
+    val footer = Footer(tools)
 
     private val toolbarWidth = 0.15f
     private val canvasHeight = 0.75f

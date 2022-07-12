@@ -68,7 +68,7 @@ class Tools(
                 else if (sender.first is Canvas && sender.second is Offset) {
                     when(selectedTool) {
                         SelectedTool.ADD_VERTEX -> {
-                            logger.info("[Tools] Canvas event, selectedTool = $selectedTool, so addVertex")
+                            logger.info("selectedTool = $selectedTool, so addVertex")
                             addVertex(sender.second as Offset)
                         }
                     }
@@ -109,6 +109,8 @@ class Tools(
             is VertexUI -> {
                 if (isAlgoStarted.value) {
                     logger.info("Start algorithm")
+                    ui?.footer?.textState?.value = "Выбрана стартовая вершина"
+
                     startAlgorithm(sender)
                 }
                 else {
@@ -250,10 +252,18 @@ class Tools(
 
                     if (currentVertex != null) {
                         val vertexUI = ui?.graphUI?.vertexToUI?.get(currentVertex.second)
+
+                        ui?.footer?.textState?.value = "Среди незафиксированных вершин с весом, отличных от ∞, выбрана вершина с мин.весом." +
+                                "\nВершина зафиксирована с весом ${vertexUI?.weightInAlgorithmState?.value}"
+
                         Pair(VertexColor.FIXED, vertexUI)
                     }
                     else if(vertexToCost != null) {
                         val vertexUI = ui?.graphUI?.vertexToUI?.get(vertexToCost.first)
+
+                        ui?.footer?.textState?.value = "Рассматриваем нефиксированную вершину среди соседей зафиксированной" +
+                                "\nМеняем вес с ${vertexUI?.weightInAlgorithmState?.value} на ${vertexToCost.second.second.toString()}"
+
                         if (vertexUI != null) {
                             outdatedLookingVertex = vertexUI
                         }
@@ -298,17 +308,26 @@ class Tools(
                         vertexUI?.weightInAlgorithmState?.value = "0"
                     }
                     vertexUI?.colorState?.value = VertexColor.FIXED
+                    ui?.footer?.textState?.value = "Среди незафиксированных вершин с весом, отличных от ∞, выбрана вершина с мин.весом." +
+                            "\nВершина зафиксирована с весом ${vertexUI?.weightInAlgorithmState?.value}"
+
+                    if (stateIndex == maxStateIndex) {
+                        ui?.footer?.textState?.value = "Среди незафиксированных вершин с весом, отличных от ∞, выбрана вершина с мин.весом." +
+                                "\nВершина зафиксирована с весом ${vertexUI?.weightInAlgorithmState?.value}" +
+                                "\nЗафиксирована последняя вершина. Алгоритм закончил работу"
+                    }
                 }
                 else if(vertexToCost != null) {
                     val vertexUI = ui?.graphUI?.vertexToUI?.get(vertexToCost.first)
                     if (vertexUI != null) {
                         outdatedLookingVertex = vertexUI
+
+                        ui?.footer?.textState?.value = "Рассматриваем нефиксированную вершину среди соседей зафиксированной" +
+                                "\nМеняем вес с ${vertexUI.weightInAlgorithmState.value} на ${vertexToCost.second.second.toString()}"
+
                         vertexUI.weightInAlgorithmState.value = vertexToCost.second.second.toString()
                         vertexUI.colorState.value = VertexColor.LOOKING
                         outdatedLookingVertex = vertexUI
-                        if (stateIndex == maxStateIndex) {
-                            vertexUI.colorState.value = VertexColor.FIXED
-                        }
                     }
                 }
             }
@@ -396,13 +415,15 @@ class Tools(
                 logger.info("Successful read file \"test.txt\"")
             }
             catch(exc: Exception) {
+                ui?.footer?.textState?.value = "Ошибка при загрузке графа"
+
                 logger.error(exc) {
                     "Broken file: ${exc.message}"
                 }
             }
         }
         else {
-            logger.info("I'm still playing...")
+            ui?.footer?.textState?.value = "Прежде, чем загрузить граф, остановите проигрываение алгоритма"
         }
 
     }
@@ -468,7 +489,12 @@ class Tools(
     private fun onChangeAlgoState() {
         isAlgoStarted.value = !isAlgoStarted.value
         if (!isAlgoStarted.value) {
+            ui?.footer?.textState?.value = "Задайте граф и запустите алгоритм"
+
             algoReset()
+        }
+        else {
+            ui?.footer?.textState?.value = "Запущен алгоритм. Выберите стартовую вершину"
         }
     }
 }
