@@ -350,7 +350,8 @@ class Tools(
     }
 
     private fun onSkip() {
-        loadToStep(maxStateIndex!!)
+        if (stateMachine != null)
+            loadToStep(maxStateIndex!!)
     }
 
     private fun onSave() {
@@ -408,11 +409,13 @@ class Tools(
                 }
 
                 val stateIndex = fileInfo.stateNumber?.toUInt()
+
                 if (stateIndex != null) {
                     startAlgorithm(ui?.graphUI?.vertexToUI?.get(fileInfo.start)!!)
                     loadToStep(stateIndex!!)
                 }
                 logger.info("Successful read file \"test.txt\"")
+
             }
             catch(exc: Exception) {
                 ui?.footer?.textState?.value = "Ошибка при загрузке графа"
