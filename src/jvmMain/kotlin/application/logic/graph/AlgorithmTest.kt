@@ -1,6 +1,7 @@
 package application.logic.graph
 
 import application.logic.VertexInfo
+import application.logic.serialization.AlgorithmUpdate
 import logic.*
 import org.junit.jupiter.api.Test
 
@@ -86,10 +87,10 @@ internal class AlgorithmTest {
         )
         val alg = Algorithm()
         val stateMachine = alg.dijkstraAlgorithm(graph,graph.getVertices().first())
-        val finalst = stateMachine.getState(stateMachine.size - 1)
-        finalst?.forEach { vertex, cost ->
-            assertEquals(waitingValues[vertex.vertexName].toString(),cost.toString())
-        }
+        val finalst = stateMachine.getUpdate(0)
+        val update = AlgorithmUpdate(null,null)
+
+        assertEquals(finalst,update)
     }
     @Test
     fun dijkstraAlgorithm1_non_trivial() {
@@ -142,10 +143,46 @@ internal class AlgorithmTest {
         )
         val alg = Algorithm()
         val stateMachine = alg.dijkstraAlgorithm(graph,graph.getVertices().first())
-        val finalst = stateMachine.getState(stateMachine.size - 1)
-        finalst?.forEach { vertex, cost ->
-            assertEquals(waitingValues[vertex.vertexName].toString(),cost.toString())
-        }
+        val finalst = stateMachine.getUpdate(3)
+
+        val v = graph.getVertices().filter { vertex: Vertex -> vertex.vertexName == "E" }
+        val update = AlgorithmUpdate(null,Pair(v[0],Pair(Float.POSITIVE_INFINITY.toInt(),5)))
+
+        assertEquals(finalst,update)
+
+    }
+    @Test
+    fun dijkstraAlgorithm_update_doesntexist() {
+        val verticesStringFormat = mutableListOf(
+            "a", "b", "c","d","e"
+        )
+
+        val edgesStringFormat = mutableMapOf(
+            "a" to mutableMapOf(
+                "b" to 1,
+                "c" to 3,
+            ),
+            "b" to mutableMapOf(
+                "c" to 2,
+            ),
+            "c" to mutableMapOf(
+                "d" to 3
+            )
+        )
+        val graph = buildGraph(verticesStringFormat, edgesStringFormat)
+        val waitingValues = mutableMapOf<String, String>(
+            "a" to "0.0",
+            "b" to "1.0",
+            "c" to "3.0",
+            "d" to "6.0",
+            "e" to "Infinity"
+        )
+        val alg = Algorithm()
+        val stateMachine = alg.dijkstraAlgorithm(graph,graph.getVertices().first())
+        val finalst = stateMachine.getUpdate(99)
+        assertNull(finalst.currentVertexChange)
+        assertNull(finalst.markVertexChange)
+
     }
     @Test
     fun dijkstraAlgorithm_no_path() {
@@ -175,9 +212,11 @@ internal class AlgorithmTest {
         )
         val alg = Algorithm()
         val stateMachine = alg.dijkstraAlgorithm(graph,graph.getVertices().first())
-        val finalst = stateMachine.getState(stateMachine.size - 1)
-        finalst?.forEach { vertex, cost ->
-            assertEquals(waitingValues[vertex.vertexName].toString(),cost.toString())
-        }
+        val finalst = stateMachine.getUpdate(stateMachine.size-1)
+        val vC = graph.getVertices().filter { vertex: Vertex -> vertex.vertexName == "c" }[0]
+        val vD = graph.getVertices().filter { vertex: Vertex -> vertex.vertexName == "d" }[0]
+        assertEquals(AlgorithmUpdate(Pair(vC,vD),null),finalst)
+
+
     }
     }
