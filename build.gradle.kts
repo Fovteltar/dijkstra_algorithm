@@ -50,6 +50,9 @@ compose.desktop {
 }
 
 val mainClass = "MainKt" // Replace this, your project main name
+dependencies {
+    implementation("org.junit.jupiter:junit-jupiter:5.8.1")
+}
 
 tasks {
     register("fatJar", Jar::class.java) {
