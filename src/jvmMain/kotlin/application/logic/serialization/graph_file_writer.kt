@@ -37,7 +37,8 @@ class GraphFileWriter(private val fileName: String){
 
     @Throws(IOException::class)
     fun toFile(fileInfo: FileInfo){
-        val printer = File(fileName).printWriter()
+        val file = File(fileName)
+        val printer = if (file.canWrite()) file.printWriter() else throw IOException("Can't write in this file")
         if(printer.checkError()) throw IOException("File didn't open")
         edgesToFile(fileInfo.graph.getEdges(), printer)
         if(fileInfo.start != null)

@@ -16,11 +16,13 @@ class GraphFileReader(fileName: String) {
 
     private fun getFileStrings(): MutableList<String> {
         val lineList = mutableListOf<String>()
-        File(fileName).useLines {
+        val file = File(fileName)
+        if(file.canRead())file.useLines {
             for (i in it) {
                 if (i.isNotBlank()) lineList.add(i.trim())
             }
         }
+        else throw IOException("File not opened")
         return lineList
     }
 
