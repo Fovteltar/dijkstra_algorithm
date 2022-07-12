@@ -39,6 +39,7 @@ class GraphUI(private val graph: Graph) {
 
     fun removeVertex(vertexUI: VertexUI):UInt {
         if (verticesUI.containsKey(vertexUI)) {
+            graph.removeVertex(vertexUI.vertex)
             val removedEdgesAmount = removeUIEdgesTo(vertexUI)
             verticesUI.remove(vertexUI)
             vertexToUI.remove(vertexUI.vertex)

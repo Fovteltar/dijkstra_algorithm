@@ -8,10 +8,7 @@ import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowForward
-import androidx.compose.material.icons.filled.Done
-import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -232,8 +229,7 @@ class Toolbar(val tools: Tools) {
             )
             Button(
                 onClick = {
-                    isAlgoStarted.value = !isAlgoStarted.value
-                    tools.notifyMe(Pair(getSuper(), "changedAlgoState"))
+                    tools.notifyMe(Pair(getSuper(), "changeAlgoState"))
                 },
                 modifier = Modifier
                     .weight(columnProportion["start"]!!, true)
@@ -275,7 +271,9 @@ class Toolbar(val tools: Tools) {
             ) {
                 Button(
                     onClick = {
-    //                    TODO("NOT IMPLEMENTED YET")
+                        if (tools.isAlgoStarted.value) {
+                            tools.notifyMe(Pair(getSuper(), "play"))
+                        }
                     },
                     modifier = Modifier
                         .weight(1f, true)
@@ -287,7 +285,7 @@ class Toolbar(val tools: Tools) {
                     )
                 ) {
                     Icon(
-                        Icons.Default.PlayArrow,
+                        if (tools.isPlayingNow.value) Icons.Default.Close else Icons.Default.PlayArrow,
                         contentDescription = null,
                         tint = Color.Red
                     )
