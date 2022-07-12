@@ -102,7 +102,7 @@ class Parser{
         keyWordsBlocksEnds[KeyWords.COORDS] = currentIndexString - 1
     }
 
-    fun checkValidBlocks(){
+    private fun checkValidBlocks(){
         val graphRange = keyWordsStartIndexes[KeyWords.GRAPH]!!.rangeTo(keyWordsBlocksEnds[KeyWords.GRAPH]!!)
         //Start key check
         if (keyWordsStartIndexes.containsKey(KeyWords.START) && keyWordsStartIndexes[KeyWords.START]!! in graphRange)throw IOException("Input error")
