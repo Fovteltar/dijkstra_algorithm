@@ -74,7 +74,6 @@ class Parser{
     }
 
     private fun checkValidCoords(){
-        if (!keyWordsStartIndexes.containsKey(KeyWords.COORDS)) return
         var currentIndexString:Int = keyWordsStartIndexes[KeyWords.COORDS] !!+ 1
         val start = getStartVertexName()
 

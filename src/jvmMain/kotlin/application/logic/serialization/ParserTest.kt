@@ -15,7 +15,13 @@ internal class ParserTest {
             "b e 2",
             "}",
             "start = a",
-            "state = 0"
+            "state = 0",
+            "coords{",
+            "a(0,0)",
+            "b(0,1)",
+            "c(1,1)",
+            "e(1,2)",
+            "}",
         )
         val v = Parser()
         assertDoesNotThrow { v.parse(string_ingoing) }
@@ -35,6 +41,14 @@ internal class ParserTest {
             "}",
             "start = a",
             "state = 3",
+            "coords{",
+            "a(0,0)",
+            "b(0,1)",
+            "c(1,1)",
+            "e(1,2)",
+            "i(2,2)",
+            "j(3,1)",
+            "}",
         )
         val v = Parser()
         assertDoesNotThrow { v.parse(string_ingoing) }
@@ -52,6 +66,13 @@ internal class ParserTest {
             "a e 15",
             "}",
             "start = a",
+            "coords{",
+            "a(0,0)",
+            "b(0,1)",
+            "c(1,1)",
+            "e(1,2)",
+            "i(2,2)",
+            "}",
         )
         val v = Parser()
         assertDoesNotThrow { v.parse(string_ingoing) }
@@ -70,8 +91,8 @@ internal class ParserTest {
             "state = 0",
             "start = a",
             "coords{",
-                "a(1,1)",
-                "b(2,2)",
+            "a(1,1)",
+            "b(2,2)",
             "c(2,3)",
             "}",
         )
