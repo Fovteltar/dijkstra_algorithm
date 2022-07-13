@@ -416,6 +416,8 @@ class Tools(
                 }
                 logger.info("Successful read file \"test.txt\"")
 
+                ui?.footer?.textState?.value = "Задайте граф и запустите алгоритм"
+
             }
             catch(exc: Exception) {
                 ui?.footer?.textState?.value = "Ошибка при загрузке графа"
