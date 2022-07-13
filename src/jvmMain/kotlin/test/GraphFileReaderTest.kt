@@ -1,18 +1,18 @@
-package application.logic.serialization
+package test
 
 import logic.Edge
 import logic.Graph
 import logic.GraphFileReader
 import logic.Vertex
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNotEquals
 import org.junit.jupiter.api.Test
-
-import org.junit.jupiter.api.Assertions.*
 
 internal class GraphFileReaderTest {
 
     @Test
     fun getFileInformation() {
-        val graph_info = GraphFileReader("test.txt")
+        val graph_info = GraphFileReader("src/jvmMain/kotlin/test/test.txt")
         val grrrr = graph_info.getFileInformation().graph
         val graph1 = Graph()
         val v1 = Vertex("a")
@@ -29,7 +29,7 @@ internal class GraphFileReaderTest {
     }
     @Test
     fun getFileInformation_not_correct() {
-        val graph_info = GraphFileReader("test.txt")
+        val graph_info = GraphFileReader("src/jvmMain/kotlin/test/test.txt")
         val grrrr = graph_info.getFileInformation().graph
         val graph1 = Graph()
         val v1 = Vertex("a")

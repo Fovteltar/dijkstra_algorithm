@@ -1,6 +1,5 @@
-package application.logic.serialization
-
-import org.junit.jupiter.api.Assertions.*
+import application.logic.serialization.Parser
+import org.junit.jupiter.api.Assertions.assertDoesNotThrow
 import org.junit.jupiter.api.Test
 
 internal class ParserTest {

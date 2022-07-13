@@ -1,13 +1,12 @@
-package application.logic.graph
-
 import application.logic.VertexInfo
 import application.logic.serialization.AlgorithmUpdate
-import logic.*
+import logic.Algorithm
+import logic.Edge
+import logic.Graph
+import logic.Vertex
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Test
-
-import org.junit.jupiter.api.Assertions.*
-import org.junit.jupiter.api.BeforeEach
-
 
 internal class AlgorithmTest {
     fun buildGraph(verticesStringFormat: MutableList<String>, edgesStringFormat: MutableMap<String, MutableMap<String, Int>>): Graph {

@@ -1,0 +1,12 @@
+graph{
+    a b 1
+    a c 4
+    b c 2
+}
+start=a
+state=0
+coords{
+    a 0 1
+    b 1 1
+    c 2 2
+}

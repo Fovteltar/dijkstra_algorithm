@@ -1,8 +1,9 @@
-package application.logic.graph
-
-import logic.*
+import logic.Edge
+import logic.Graph
+import logic.Vertex
 import org.junit.jupiter.api.Assertions
-import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNotEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
